@@ -7,17 +7,15 @@
       the specific language governing permissions and limitations under the License. -->
          <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
             <modelVersion>4.0.0</modelVersion>
-            <parent>
-               <groupId>fr.liglab.adele.common</groupId>
-               <artifactId>base</artifactId>
-               <version>1.0.3</version>
-               <relativePath />
-            </parent>
+            <groupId>fr.liglab.adele.common</groupId>
             <artifactId>distribution-plugin-reactor</artifactId>
-            <name>${productName} :: Distribution Plugin Reactor</name>
+            <name>${productName} :: ${projectName}</name>
             <version>1.0.0-SNAPSHOT</version>
             <packaging>pom</packaging>
-            
+            <properties>
+               <productName>OSGi Distribution Plugin</productName>
+               <projectName>Distribution Plugin Reactor</projectName>
+            </properties>
             <modules>
                <module>maven-distribution-plugin</module>
             </modules>
@@ -66,6 +64,18 @@
                         <artifactId>maven-deploy-plugin</artifactId>
                         <version>2.7</version>
                      </plugin>
+                     <!-- Compiler plugin -->
+                     <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-compiler-plugin</artifactId>
+                        <version>2.5.1</version>
+                        <configuration>
+                           <!-- By default, compile Java 1.5 sources for JRE 1.5. for better support 
+                              of 32 bit native libraries -->
+                                 <source>1.5</source>
+                                 <target>1.5</target>
+                              </configuration>
+                           </plugin>
                   </plugins>
                </pluginManagement>
             </build>
