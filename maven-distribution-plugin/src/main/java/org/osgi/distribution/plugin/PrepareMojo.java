@@ -119,13 +119,13 @@ public class PrepareMojo extends AbstractMojo {
 
 
 	private void generateScripts(){
-		
+
 		String winpath = this.project.getBasedir() + File.separator + "start.bat";
 		String unixpath = this.project.getBasedir()+ File.separator + "start.sh";
 		generateScriptFile(generateWinScriptContent(), winpath);
 		generateScriptFile(generateUnixScriptContent(), unixpath);
 	}
-	
+
 	private String generateWinScriptContent(){
 		StringBuilder content = new StringBuilder();
 		content.append("cd ");
@@ -194,8 +194,8 @@ public class PrepareMojo extends AbstractMojo {
 				Dependency dep = (Dependency) depObj;
 
 				if (dep.getType().equals("osgi-distribution")) {
-					copyDependency(dep);
-					unzipOsgiDistribution(dep);
+					//copyDependency(dep);
+					unzipOsgiDistributionWithDependencyPugin(dep);
 				} else {
 					copyDependency(dep);
 				}
@@ -214,7 +214,7 @@ public class PrepareMojo extends AbstractMojo {
 			throws MojoExecutionException, IOException {
 
 		String temporalDependencyPath = this.project.getBuild().getDirectory();
-		
+
 		String zipFinalPathName = defaultDistribDirectoryPath + File.separator
 				+ dep.getArtifactId() + "-" + dep.getVersion() + ".zip";
 		Xpp3Dom config = MojoExecutor.configuration(
@@ -228,7 +228,24 @@ public class PrepareMojo extends AbstractMojo {
 		File temporal = new File(temporalDependencyPath + File.separator
 				+ dep.getArtifactId() );
 		FileUtils.copyDirectoryStructure(temporal, new File(defaultDistribDirectoryPath));
-		temporal.delete();
+//		temporal.delete();
+	}
+
+	private void unzipOsgiDistributionWithDependencyPugin(Dependency dep) throws MojoExecutionException, IOException {
+		String temporalDependencyPath = this.project.getBuild().getDirectory() + File.separator + "dependencies";
+				Xpp3Dom config = MojoExecutor.configuration(
+				MojoExecutor.element("includeGroupIds", dep.getGroupId()),
+				MojoExecutor.element("includeArtifactIds", dep.getArtifactId()),
+				MojoExecutor.element("outputDirectory", temporalDependencyPath));
+
+		MojoExecutor.executeMojo(MojoExecutor.plugin("org.apache.maven.plugins",
+				"maven-dependency-plugin", "2.5.1"), MojoExecutor.goal("unpack-dependencies"),
+				config, MojoExecutor.executionEnvironment(project, session,
+						pluginManager));
+		File temporal = new File(temporalDependencyPath + File.separator
+				+ dep.getArtifactId() );
+		FileUtils.copyDirectoryStructure(temporal, new File(defaultDistribDirectoryPath));
+//		temporal.delete();
 	}
 
 	/**
