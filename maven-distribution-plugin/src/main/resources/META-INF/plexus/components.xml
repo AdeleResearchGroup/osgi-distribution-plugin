@@ -14,10 +14,10 @@
 						org.apache.maven.plugins:maven-resources-plugin:resources
 					</process-resources>
 					<prepare-package>
-					    fr.liglab.adele.common:osgi-distribution-plugin:prepare
+					    fr.liglab.adele.common:maven-osgi-distribution-plugin:prepare
 					</prepare-package>
 					<package>
-                        fr.liglab.adele.common:osgi-distribution-plugin:zip
+                        fr.liglab.adele.common:maven-osgi-distribution-plugin:zip
 					</package>
 					<install>
 						org.apache.maven.plugins:maven-install-plugin:install

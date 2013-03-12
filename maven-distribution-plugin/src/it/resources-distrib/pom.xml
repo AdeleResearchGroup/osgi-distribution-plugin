@@ -10,7 +10,7 @@
         <plugins>
             <plugin>
                 <groupId>fr.liglab.adele.common</groupId>
-                <artifactId>osgi-distribution-plugin</artifactId>
+                <artifactId>maven-osgi-distribution-plugin</artifactId>
                 <version>@project.version@</version>
                 <extensions>true</extensions>
             </plugin>
