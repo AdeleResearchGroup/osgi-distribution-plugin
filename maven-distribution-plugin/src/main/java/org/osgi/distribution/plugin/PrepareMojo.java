@@ -372,9 +372,12 @@ public class PrepareMojo extends AbstractMojo {
                 config, MojoExecutor.executionEnvironment(project, session,
                 pluginManager));
         File temporal = new File(temporalDependencyPath + File.separator
-                + dep.getArtifactId() + File.separator + dep.getArtifactId() + "-" + dep.getVersion() );
+                + dep.getArtifactId());
+        for (File temporalFile : temporal.listFiles()) {
+            if (temporalFile.isDirectory() && temporalFile.getName().endsWith(dep.getVersion()))
+                FileUtils.copyDirectoryStructure(temporalFile, new File(defaultDistribDirectoryPath));
+        }
 
-        FileUtils.copyDirectoryStructure(temporal, new File(defaultDistribDirectoryPath));
 //		temporal.delete();
     }
 
