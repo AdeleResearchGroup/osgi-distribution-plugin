@@ -354,7 +354,7 @@ public class PrepareMojo extends AbstractMojo {
                 .toDom());
         itemAsDom.addChild(MojoExecutor.element("type", "zip").toDom());
         itemAsDom.addChild(MojoExecutor.element("overWrite", "true").toDom());
-        itemAsDom.addChild(MojoExecutor.element("excludes", "README,start").toDom());
+        itemAsDom.addChild(MojoExecutor.element("excludes", "**/README,**/start,,**/start.bat").toDom());
 
         Xpp3Dom config = MojoExecutor.configuration(
                 MojoExecutor.element("overWriteSnapshots", "true"),
