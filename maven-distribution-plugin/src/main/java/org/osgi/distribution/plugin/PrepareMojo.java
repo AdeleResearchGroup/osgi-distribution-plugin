@@ -6,6 +6,7 @@ import java.io.FileWriter;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.model.Dependency;
@@ -27,7 +28,11 @@ import org.twdata.maven.mojoexecutor.MojoExecutor;
  */
 public class PrepareMojo extends AbstractMojo {
 
-	/** 
+		 
+	private static Pattern regexSlashes = Pattern.compile("\\\\");  
+	
+	
+	/**
 	 * @parameter expression="${project.artifactId}"
 	 */
 	protected String defaultDistribDirectoryName;
@@ -70,36 +75,41 @@ public class PrepareMojo extends AbstractMojo {
 
 	/**
 	 * Default output directory
+	 * 
 	 * @parameter alias="defaultOutputDirectory" default-value="load"
 	 * 
 	 */
 	private String defaultOutputDirectory;
 
 	/**
-     * Generate or not starter scripts
-     * @parameter alias="generateScripts" default-value="false"
-     *
-     */
-    private boolean generateScripts;
+	 * Generate or not starter scripts
+	 * 
+	 * @parameter alias="generateScripts" default-value="false"
+	 * 
+	 */
+	private boolean generateScripts;
 
-    /**
-     * Unzip Deployment packages into the output directory. The structure is flattened into the output directory.
-     *
-     * @parameter alias="flattenDP" default-value="false"
-     *
-     */
-    private boolean flattenDP;
+	/**
+	 * Unzip Deployment packages into the output directory. The structure is
+	 * flattened into the output directory.
+	 * 
+	 * @parameter alias="flattenDP" default-value="false"
+	 * 
+	 */
+	private boolean flattenDP;
 
 	/**
 	 * Execute that mojo.
 	 */
 	public void execute() throws MojoExecutionException {
 
-		defaultDistribDirectoryPath = this.project.getBuild().getDirectory() + File.separator + defaultDistribDirectoryName;
+		defaultDistribDirectoryPath = this.project.getBuild().getDirectory() + File.separator
+		      + defaultDistribDirectoryName;
+
 		try {
 			manageDependencies();
-            if (flattenDP)
-                unzipDPs();
+			if (flattenDP)
+				unzipDPs();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -110,6 +120,8 @@ public class PrepareMojo extends AbstractMojo {
 		}
 
 	}
+
+
 
 	/**
 	 * Give executable rights to bat and sh files in distrib directory.
@@ -122,42 +134,42 @@ public class PrepareMojo extends AbstractMojo {
 				return (name.endsWith(".bat") || !name.contains("."));
 			}
 		});
-		for (File file : filesInDistrib){
+		for (File file : filesInDistrib) {
 			file.setExecutable(true);
 		}
 	}
 
-
-	private void generateScripts(){
+	private void generateScripts() {
 
 		String winpath = this.project.getBasedir() + File.separator + "start.bat";
-		String unixpath = this.project.getBasedir()+ File.separator + "start.sh";
+		String unixpath = this.project.getBasedir() + File.separator + "start.sh";
 		generateScriptFile(generateWinScriptContent(), winpath);
 		generateScriptFile(generateUnixScriptContent(), unixpath);
 	}
 
-	private String generateWinScriptContent(){
+	private String generateWinScriptContent() {
 		StringBuilder content = new StringBuilder();
 		content.append("cd ");
-		content.append(this.project.getBuild().getDirectory()).append( File.separator).append( defaultDistribDirectoryName);
+		content.append(this.project.getBuild().getDirectory()).append(File.separator).append(defaultDistribDirectoryName);
 		content.append('\n');
 		content.append("java -jar bin\\felix.jar");
 		return content.toString();
 	}
+
 	/**
 	 * Generate unix script files, useful on build.
 	 */
 	private String generateUnixScriptContent() {
 		StringBuilder content = new StringBuilder("#!/usr/bin/env sh\n");
 		content.append("cd ");
-		content.append(this.project.getBuild().getDirectory()).append( File.separator).append( defaultDistribDirectoryName);
+		content.append(this.project.getBuild().getDirectory()).append(File.separator).append(defaultDistribDirectoryName);
 		content.append('\n');
 		content.append("exec java -jar bin/felix.jar");
 		return content.toString();
 	}
 
-	private void generateScriptFile(String content, String filename){
-		try{
+	private void generateScriptFile(String content, String filename) {
+		try {
 			File file = new File(filename);
 			// if file doesnt exists, then create it
 			if (!file.exists()) {
@@ -179,11 +191,8 @@ public class PrepareMojo extends AbstractMojo {
 
 		Xpp3Dom config = MojoExecutor.configuration(MojoExecutor.element("outputDirectory", defaultDistribDirectoryPath));
 
-		MojoExecutor.executeMojo(
-				MojoExecutor.plugin("org.apache.maven.plugins",
-						"maven-resources-plugin", "2.6"), MojoExecutor
-						.goal("resources"), config, MojoExecutor
-						.executionEnvironment(project, session, pluginManager));
+		MojoExecutor.executeMojo(MojoExecutor.plugin("org.apache.maven.plugins", "maven-resources-plugin", "2.6"),
+		      MojoExecutor.goal("resources"), config, MojoExecutor.executionEnvironment(project, session, pluginManager));
 
 	}
 
@@ -191,7 +200,7 @@ public class PrepareMojo extends AbstractMojo {
 	 * gather dependencies as dom element.
 	 * 
 	 * @throws MojoExecutionException
-	 * @throws IOException 
+	 * @throws IOException
 	 */
 	private void manageDependencies() throws MojoExecutionException, IOException {
 		List<Dependency> dependencies = project.getDependencies();
@@ -203,10 +212,10 @@ public class PrepareMojo extends AbstractMojo {
 
 				Dependency dep = (Dependency) depObj;
 
-                if (dep.getType().equals("play2")) {
-                    unzipPlay2WithDependencyPlugin(dep);
-                } else if (dep.getType().equals("osgi-distribution")) {
-                    unzipOsgiDistributionWithDependencyPlugin(dep);
+				if (dep.getType().equals("play2")) {
+					unzipPlay2WithDependencyPlugin(dep);
+				} else if (dep.getType().equals("osgi-distribution")) {
+					unzipOsgiDistributionWithDependencyPlugin(dep);
 				} else {
 					copyDependency(dep);
 				}
@@ -215,171 +224,176 @@ public class PrepareMojo extends AbstractMojo {
 	}
 
 	/**
-	 * Unzip an osgi distribution dependency into distribution folder.
-     * WARNING : introduce corrupted files sometimes
+	 * Unzip an osgi distribution dependency into distribution folder. WARNING :
+	 * introduce corrupted files sometimes
 	 * 
 	 * @param dep
 	 * @throws MojoExecutionException
 	 * @throws IOException
-     * @deprecated
+	 * @deprecated
 	 */
-	private void unzipOsgiDistribution(Dependency dep)
-			throws MojoExecutionException, IOException {
+	private void unzipOsgiDistribution(Dependency dep) throws MojoExecutionException, IOException {
 
 		String temporalDependencyPath = this.project.getBuild().getDirectory();
 
-		String zipFinalPathName = defaultDistribDirectoryPath + File.separator
-				+ dep.getArtifactId() + "-" + dep.getVersion() + ".zip";
-		Xpp3Dom config = MojoExecutor.configuration(
-				MojoExecutor.element("from", zipFinalPathName),
-				MojoExecutor.element("to", temporalDependencyPath));
+		String zipFinalPathName = defaultDistribDirectoryPath + File.separator + dep.getArtifactId() + "-"
+		      + dep.getVersion() + ".zip";
+		Xpp3Dom config = MojoExecutor.configuration(MojoExecutor.element("from", zipFinalPathName),
+		      MojoExecutor.element("to", temporalDependencyPath));
 
-		MojoExecutor.executeMojo(MojoExecutor.plugin("org.codehaus.mojo",
-				"truezip-maven-plugin", "1.1"), MojoExecutor.goal("cp"),
-				config, MojoExecutor.executionEnvironment(project, session,
-						pluginManager));
-		File temporal = new File(temporalDependencyPath + File.separator
-				+ dep.getArtifactId() );
+		MojoExecutor.executeMojo(MojoExecutor.plugin("org.codehaus.mojo", "truezip-maven-plugin", "1.1"),
+		      MojoExecutor.goal("cp"), config, MojoExecutor.executionEnvironment(project, session, pluginManager));
+		File temporal = new File(temporalDependencyPath + File.separator + dep.getArtifactId());
 		FileUtils.copyDirectoryStructure(temporal, new File(defaultDistribDirectoryPath));
-//		temporal.delete();
+		// temporal.delete();
 	}
 
+	private void unzipOsgiDistributionWithDependencyPlugin(Dependency dep) throws MojoExecutionException, IOException {
+		String temporalDependencyPath = this.project.getBuild().getDirectory() + File.separator + "dependencies";
+		Xpp3Dom config = MojoExecutor.configuration(MojoExecutor.element("includeGroupIds", dep.getGroupId()),
+		      MojoExecutor.element("includeArtifactIds", dep.getArtifactId()),
+		      MojoExecutor.element("outputDirectory", temporalDependencyPath));
 
-    private void unzipOsgiDistributionWithDependencyPlugin(Dependency dep) throws MojoExecutionException, IOException {
-        String temporalDependencyPath = this.project.getBuild().getDirectory() + File.separator + "dependencies";
-        Xpp3Dom config = MojoExecutor.configuration(
-                MojoExecutor.element("includeGroupIds", dep.getGroupId()),
-                MojoExecutor.element("includeArtifactIds", dep.getArtifactId()),
-                MojoExecutor.element("outputDirectory", temporalDependencyPath));
+		MojoExecutor.executeMojo(MojoExecutor.plugin("org.apache.maven.plugins", "maven-dependency-plugin", "2.5.1"),
+		      MojoExecutor.goal("unpack-dependencies"), config,
+		      MojoExecutor.executionEnvironment(project, session, pluginManager));
+		File temporal = new File(temporalDependencyPath + File.separator + dep.getArtifactId());
+		FileUtils.copyDirectoryStructure(temporal, new File(defaultDistribDirectoryPath));
+		// temporal.delete();
+	}
 
-        MojoExecutor.executeMojo(MojoExecutor.plugin("org.apache.maven.plugins",
-                "maven-dependency-plugin", "2.5.1"), MojoExecutor.goal("unpack-dependencies"),
-                config, MojoExecutor.executionEnvironment(project, session,
-                pluginManager));
-        File temporal = new File(temporalDependencyPath + File.separator
-                + dep.getArtifactId() );
-        FileUtils.copyDirectoryStructure(temporal, new File(defaultDistribDirectoryPath));
-//		temporal.delete();
-    }
+	private String translatePath(String pathname) {
 
-    private void unzipDPs() throws MojoExecutionException, IOException {
-        // unzip Deployment package
-        Xpp3Dom gmavenConfig = MojoExecutor.configuration(
-                MojoExecutor.element("source",
-                "                 import org.apache.commons.lang.StringUtils\n" +
-                "                 import java.util.zip.ZipInputStream\n" +
-                "        def getExtensionFromFilename(filename) {\n" +
-                "                        def returned_value = \"\"\n" +
-                "                        m = (filename =~ /(\\.[^\\.]*)$/)\n" +
-                "                        if (m.size() > 0) returned_value = ((m[0][0].size() > 0) ? m[0][0].substring(1).trim().toLowerCase() : \"\");\n" +
-                "                        return returned_value\n" +
-                "                    }\n" +
-                "                 File.metaClass.unzip = { String dest ->\n" +
-                "                        //in metaclass added methods, 'delegate' is the object on which\n" +
-                "                        //the method is called. Here it's the file to unzip\n" +
-                "                        def result = new ZipInputStream(new FileInputStream(delegate))\n" +
-                "                        def destFile = new File(dest)\n" +
-                "                        if(!destFile.exists()){\n" +
-                "                            destFile.mkdir();\n" +
-                "                        }\n" +
-                "                        result.withStream{\n" +
-                "                            def entry\n" +
-                "                            while(entry = result.nextEntry){\n" +
-                "                                if (!entry.isDirectory()){\n" +
-                "                                    new File(dest + File.separator + entry.name).parentFile?.mkdirs()\n" +
-                "                                    def output = new FileOutputStream(dest + File.separator\n" +
-                "                                            + entry.name)\n" +
-                "                                    output.withStream{\n" +
-                "                                        int len = 0;\n" +
-                "                                        byte[] buffer = new byte[4096]\n" +
-                "                                        while ((len = result.read(buffer)) > 0){\n" +
-                "                                            output.write(buffer, 0, len);\n" +
-                "                                        }\n" +
-                "                                    }\n" +
-                "                                }\n" +
-                "                                else {\n" +
-                "                                    new File(dest + File.separator + entry.name).mkdir()\n" +
-                "                                }\n" +
-                "                            }\n" +
-                "                        }\n" +
-                "                    }\n" +
-                "                    File tempDistribLoadDir = new File(\"" + defaultDistribDirectoryPath + "/load/\")\n" +
-                "                        if (tempDistribLoadDir.exists()) {\n" +
-                "                            tempDistribLoadDir.eachFile { file ->\n" +
-                "\n" +
-                "                                def fileName = file.name\n" +
-                "                                def fileExtension = getExtensionFromFilename(fileName)\n" +
-                "\n" +
-                "                                // replace all PRODUCT match items to real product name\n" +
-                "                                if (fileExtension.equalsIgnoreCase(\"dp\")) {\n" +
-                "\n" +
-                "                                    file.unzip(\"$tempDistribLoadDir\")\n" +
-                "                                    file.delete()\n" +
-                "                                }\n" +
-                "                            }\n" +
-                "                        }\n" +
-                "\n" +
-                "                        File tempDistribLoadBundleDir = new File(\"$tempDistribLoadDir/bundles/\")\n" +
-                "                        if (tempDistribLoadBundleDir.exists()) {\n" +
-                "                            tempDistribLoadBundleDir.eachFile { file ->\n" +
-                "                                file.renameTo(new File(tempDistribLoadDir, file.getName()));\n" +
-                "                            }\n" +
-                "                            tempDistribLoadBundleDir.deleteDir()\n" +
-                "                        }\n" +
-                "\n" +
-                "                        File tempDistribLoadManifestDir = new File(\"$tempDistribLoadDir/META-INF/\")\n" +
-                "                        if (tempDistribLoadManifestDir.exists()) {\n" +
-                "                            tempDistribLoadManifestDir.deleteDir()\n" +
-                "                        }"
-                ));
-        MojoExecutor.executeMojo(MojoExecutor.plugin("org.codehaus.groovy.maven",
-                "gmaven-plugin", "1.0"), MojoExecutor.goal("execute"),
-                gmavenConfig, MojoExecutor.executionEnvironment(project, session,
-                pluginManager));
+		if (pathname == null) {
+			return null;
+		}
 
-    }
+		pathname = regexSlashes.matcher(pathname).replaceAll("/");
+		pathname = "/" + pathname;
+		return pathname;
+	}
+	
+	private void unzipDPs() throws MojoExecutionException, IOException {
+		// unzip Deployment package
 
-    private void unzipPlay2WithDependencyPlugin(Dependency dep) throws MojoExecutionException, IOException {
-        String temporalDependencyPath = this.project.getBuild().getDirectory() + File.separator + "dependencies";
+		String tempDir = null;
+		
+		// Translate the path from windows to UNIX format to avoid groovy concatenation problem due to escape character  
+		if ("\\".equals(File.separator)) 
+			tempDir = translatePath(defaultDistribDirectoryPath);
+		else
+			tempDir = defaultDistribDirectoryPath;
+				
 
-        // prepare dependency plugin config
-        Xpp3Dom items = null;
-        items = new Xpp3Dom("artifactItems");
-        Xpp3Dom itemAsDom = new Xpp3Dom("artifactItem");
-        itemAsDom.addChild(MojoExecutor.element("groupId", dep.getGroupId())
-                .toDom());
-        itemAsDom.addChild(MojoExecutor.element("artifactId",
-                dep.getArtifactId()).toDom());
-        itemAsDom.addChild(MojoExecutor.element("version", dep.getVersion())
-                .toDom());
-        itemAsDom.addChild(MojoExecutor.element("type", "zip").toDom());
-        itemAsDom.addChild(MojoExecutor.element("overWrite", "true").toDom());
-        itemAsDom.addChild(MojoExecutor.element("excludes", "**/README,**/start,,**/start.bat").toDom());
+		Xpp3Dom gmavenConfig = MojoExecutor
+		      .configuration(MojoExecutor
+		            .element(
+		                  "source",
+		                  "                 import org.apache.commons.lang.StringUtils\n"
+		                        + "                 import java.util.zip.ZipInputStream\n"
+		                        + "        def getExtensionFromFilename(filename) {\n"
+		                        + "                        def returned_value = \"\"\n"
+		                        + "                        m = (filename =~ /(\\.[^\\.]*)$/)\n"
+		                        + "                        if (m.size() > 0) returned_value = ((m[0][0].size() > 0) ? m[0][0].substring(1).trim().toLowerCase() : \"\");\n"
+		                        + "                        return returned_value\n"
+		                        + "                    }\n"
+		                        + "                 File.metaClass.unzip = { String dest ->\n"
+		                        + "                        //in metaclass added methods, 'delegate' is the object on which\n"
+		                        + "                        //the method is called. Here it's the file to unzip\n"
+		                        + "                        def result = new ZipInputStream(new FileInputStream(delegate))\n"
+		                        + "                        def destFile = new File(dest)\n"
+		                        + "                        if(!destFile.exists()){\n"
+		                        + "                            destFile.mkdir();\n"
+		                        + "                        }\n"
+		                        + "                        result.withStream{\n"
+		                        + "                            def entry\n"
+		                        + "                            while(entry = result.nextEntry){\n"
+		                        + "                                if (!entry.isDirectory()){\n"
+		                        + "                                    new File(dest + File.separator + entry.name).parentFile?.mkdirs()\n"
+		                        + "                                    def output = new FileOutputStream(dest + File.separator\n"
+		                        + "                                            + entry.name)\n"
+		                        + "                                    output.withStream{\n"
+		                        + "                                        int len = 0;\n"
+		                        + "                                        byte[] buffer = new byte[4096]\n"
+		                        + "                                        while ((len = result.read(buffer)) > 0){\n"
+		                        + "                                            output.write(buffer, 0, len);\n"
+		                        + "                                        }\n"
+		                        + "                                    }\n"
+		                        + "                                }\n"
+		                        + "                                else {\n"
+		                        + "                                    new File(dest + File.separator + entry.name).mkdir()\n"
+		                        + "                                }\n" + "                            }\n"
+		                        + "                        }\n" + "                    }\n"
+		                        + "                    File tempDistribDir = new File(\""
+		                        + tempDir
+		                        + "\")\n"
+		                        + "                    File tempDistribLoadDir = new File(tempDistribDir, \"load\")\n"
+		                        + "                        if (tempDistribLoadDir.exists()) {\n"
+		                        + "                            tempDistribLoadDir.eachFile { file ->\n"
+		                        + "\n"
+		                        + "                                def fileName = file.name\n"
+		                        + "                                def fileExtension = getExtensionFromFilename(fileName)\n"
+		                        + "\n"
+		                        + "                                // replace all PRODUCT match items to real product name\n"
+		                        + "                                if (fileExtension.equalsIgnoreCase(\"dp\")) {\n"
+		                        + "\n"
+		                        + "                                    file.unzip(\"$tempDistribLoadDir\")\n"
+		                        + "                                    file.delete()\n"
+		                        + "                                }\n"
+		                        + "                            }\n"
+		                        + "                        }\n"
+		                        + "\n"
+		                        + "                        File tempDistribLoadBundleDir = new File(tempDistribLoadDir, \"bundles\")\n"
+		                        + "                        if (tempDistribLoadBundleDir.exists()) {\n"
+		                        + "                            tempDistribLoadBundleDir.eachFile { file ->\n"
+		                        + "                                file.renameTo(new File(tempDistribLoadDir, file.getName()));\n"
+		                        + "                            }\n"
+		                        + "                            tempDistribLoadBundleDir.deleteDir()\n"
+		                        + "                        }\n"
+		                        + "\n"
+		                        + "                        File tempDistribLoadManifestDir = new File(tempDistribLoadDir, \"META-INF\")\n"
+		                        + "                        if (tempDistribLoadManifestDir.exists()) {\n"
+		                        + "                            tempDistribLoadManifestDir.deleteDir()\n"
+		                        + "                        }"));
+		MojoExecutor.executeMojo(MojoExecutor.plugin("org.codehaus.groovy.maven", "gmaven-plugin", "1.0"),
+		      MojoExecutor.goal("execute"), gmavenConfig,
+		      MojoExecutor.executionEnvironment(project, session, pluginManager));
 
-        Xpp3Dom config = MojoExecutor.configuration(
-                MojoExecutor.element("overWriteSnapshots", "true"),
-                MojoExecutor.element("overWriteIfNewer", "true"));
+	}
 
-        config.addChild(MojoExecutor.element("outputDirectory",
-                temporalDependencyPath + File.separator
-                        + dep.getArtifactId()).toDom());
+	private void unzipPlay2WithDependencyPlugin(Dependency dep) throws MojoExecutionException, IOException {
+		String temporalDependencyPath = this.project.getBuild().getDirectory() + File.separator + "dependencies";
 
-        items.addChild(itemAsDom);
-        config.addChild(items);
+		// prepare dependency plugin config
+		Xpp3Dom items = null;
+		items = new Xpp3Dom("artifactItems");
+		Xpp3Dom itemAsDom = new Xpp3Dom("artifactItem");
+		itemAsDom.addChild(MojoExecutor.element("groupId", dep.getGroupId()).toDom());
+		itemAsDom.addChild(MojoExecutor.element("artifactId", dep.getArtifactId()).toDom());
+		itemAsDom.addChild(MojoExecutor.element("version", dep.getVersion()).toDom());
+		itemAsDom.addChild(MojoExecutor.element("type", "zip").toDom());
+		itemAsDom.addChild(MojoExecutor.element("overWrite", "true").toDom());
+		itemAsDom.addChild(MojoExecutor.element("excludes", "**/README,**/start,,**/start.bat").toDom());
 
-        MojoExecutor.executeMojo(MojoExecutor.plugin("org.apache.maven.plugins",
-                "maven-dependency-plugin", "2.5.1"), MojoExecutor.goal("unpack"),
-                config, MojoExecutor.executionEnvironment(project, session,
-                pluginManager));
-        File temporal = new File(temporalDependencyPath + File.separator
-                + dep.getArtifactId());
-        for (File temporalFile : temporal.listFiles()) {
-            if (temporalFile.isDirectory() && temporalFile.getName().endsWith(dep.getVersion()))
-                FileUtils.copyDirectoryStructure(temporalFile, new File(defaultDistribDirectoryPath));
-        }
+		Xpp3Dom config = MojoExecutor.configuration(MojoExecutor.element("overWriteSnapshots", "true"),
+		      MojoExecutor.element("overWriteIfNewer", "true"));
 
-//		temporal.delete();
-    }
+		config.addChild(MojoExecutor.element("outputDirectory",
+		      temporalDependencyPath + File.separator + dep.getArtifactId()).toDom());
+
+		items.addChild(itemAsDom);
+		config.addChild(items);
+
+		MojoExecutor.executeMojo(MojoExecutor.plugin("org.apache.maven.plugins", "maven-dependency-plugin", "2.5.1"),
+		      MojoExecutor.goal("unpack"), config, MojoExecutor.executionEnvironment(project, session, pluginManager));
+		File temporal = new File(temporalDependencyPath + File.separator + dep.getArtifactId());
+		for (File temporalFile : temporal.listFiles()) {
+			if (temporalFile.isDirectory() && temporalFile.getName().endsWith(dep.getVersion()))
+				FileUtils.copyDirectoryStructure(temporalFile, new File(defaultDistribDirectoryPath));
+		}
+
+		// temporal.delete();
+	}
 
 	/**
 	 * Copy the dependency given as parameter into default folder, or given
@@ -395,39 +409,29 @@ public class PrepareMojo extends AbstractMojo {
 		Xpp3Dom items = null;
 		items = new Xpp3Dom("artifactItems");
 		Xpp3Dom itemAsDom = new Xpp3Dom("artifactItem");
-		itemAsDom.addChild(MojoExecutor.element("groupId", dep.getGroupId())
-				.toDom());
-		itemAsDom.addChild(MojoExecutor.element("artifactId",
-				dep.getArtifactId()).toDom());
-		itemAsDom.addChild(MojoExecutor.element("version", dep.getVersion())
-				.toDom());
+		itemAsDom.addChild(MojoExecutor.element("groupId", dep.getGroupId()).toDom());
+		itemAsDom.addChild(MojoExecutor.element("artifactId", dep.getArtifactId()).toDom());
+		itemAsDom.addChild(MojoExecutor.element("version", dep.getVersion()).toDom());
 		itemAsDom.addChild(MojoExecutor.element("type", dep.getType()).toDom());
 
-		Xpp3Dom config = MojoExecutor.configuration(
-				MojoExecutor.element("overWriteSnapshots", "true"),
-				MojoExecutor.element("overWriteIfNewer", "true"));
+		Xpp3Dom config = MojoExecutor.configuration(MojoExecutor.element("overWriteSnapshots", "true"),
+		      MojoExecutor.element("overWriteIfNewer", "true"));
 
 		if (dep.getType().equals("osgi-distribution")) {
-			config.addChild(MojoExecutor.element("outputDirectory",
-					defaultDistribDirectoryPath).toDom());
+			config.addChild(MojoExecutor.element("outputDirectory", defaultDistribDirectoryPath).toDom());
 		} else {
 			if (outputs != null) {
 				// check if there is an output entry for that dependency
 				for (Output output : outputs) {
-					if (dep.getArtifactId().equals(
-							output.getIncludesArtifactId())) {
+					if (dep.getArtifactId().equals(output.getIncludesArtifactId())) {
 						// found a matching
 						foundMatching = true;
 						if (output.getOutputFileName() != null) {
-							itemAsDom.addChild(MojoExecutor.element(
-									"destFileName", output.getOutputFileName())
-									.toDom());
+							itemAsDom.addChild(MojoExecutor.element("destFileName", output.getOutputFileName()).toDom());
 						}
 						if (output.getDirectory() != null) {
-							config.addChild(MojoExecutor.element(
-									"outputDirectory",
-									defaultDistribDirectoryPath +File.separator + output.getDirectory())
-									.toDom());
+							config.addChild(MojoExecutor.element("outputDirectory",
+							      defaultDistribDirectoryPath + File.separator + output.getDirectory()).toDom());
 						}
 						// since we cant have 2 outputs for the same dep, break
 						// out of the loop
@@ -436,22 +440,20 @@ public class PrepareMojo extends AbstractMojo {
 				}
 				if (!foundMatching) {
 					config.addChild(MojoExecutor.element("outputDirectory",
-							defaultDistribDirectoryPath + File.separator + defaultOutputDirectory).toDom());
+					      defaultDistribDirectoryPath + File.separator + defaultOutputDirectory).toDom());
 				}
 			} else {
-				// default : send all dependencies to <defaultOutputDirectory> folder (default value is "load").
+				// default : send all dependencies to <defaultOutputDirectory>
+				// folder (default value is "load").
 				config.addChild(MojoExecutor.element("outputDirectory",
-						defaultDistribDirectoryPath + File.separator + defaultOutputDirectory).toDom());
+				      defaultDistribDirectoryPath + File.separator + defaultOutputDirectory).toDom());
 			}
 		}
 		items.addChild(itemAsDom);
 		config.addChild(items);
 
-		MojoExecutor.executeMojo(
-				MojoExecutor.plugin("org.apache.maven.plugins",
-						"maven-dependency-plugin", "2.5.1"), MojoExecutor
-						.goal("copy"), config, MojoExecutor
-						.executionEnvironment(project, session, pluginManager));
+		MojoExecutor.executeMojo(MojoExecutor.plugin("org.apache.maven.plugins", "maven-dependency-plugin", "2.5.1"),
+		      MojoExecutor.goal("copy"), config, MojoExecutor.executionEnvironment(project, session, pluginManager));
 	}
 
 }
