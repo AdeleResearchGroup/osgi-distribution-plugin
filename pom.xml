@@ -10,7 +10,7 @@
             <groupId>fr.liglab.adele.common</groupId>
             <artifactId>distribution-plugin-reactor</artifactId>
             <name>${productName} :: ${projectName}</name>
-            <version>1.0.0</version>
+            <version>1.0.1-SNAPSHOT</version>
             <packaging>pom</packaging>
             <properties>
                <productName>OSGi Distribution Plugin</productName>
