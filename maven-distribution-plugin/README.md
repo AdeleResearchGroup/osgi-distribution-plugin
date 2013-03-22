@@ -31,7 +31,7 @@ Projects using this plugin need to use the "osgi-distribution" packaging type, a
     <plugins>
         <plugin>
             <groupId>fr.liglab.adele.common</groupId>
-            <artifactId>osgi-distribution-plugin</artifactId>
+            <artifactId>maven-osgi-distribution-plugin</artifactId>
             <version>@project.version@</version>
             <extensions>true</extensions>
             <configuration>
