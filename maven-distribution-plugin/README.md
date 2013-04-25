@@ -31,7 +31,7 @@ Projects using this plugin need to use the "osgi-distribution" packaging type, a
     <plugins>
         <plugin>
             <groupId>fr.liglab.adele.common</groupId>
-            <artifactId>osgi-distribution-plugin</artifactId>
+            <artifactId>maven-osgi-distribution-plugin</artifactId>
             <version>@project.version@</version>
             <extensions>true</extensions>
             <configuration>
@@ -47,3 +47,13 @@ Projects using this plugin need to use the "osgi-distribution" packaging type, a
 ```
 
 To run the plugin, just call the "install" goal on your project.
+
+Plugin configuration options
+* `defaultOutputDirectory` to specifiy the location of the artifacts declared in the dependency section. Except for artifacts defined in the `outputs` section. Default value `load`.
+* `generateScripts` to generate launcher temporal scripts (useful while testing distribution) Default value `false`.
+* `flattenDP` to specify if Deployment-Packages dependencies will be flatten in the distribution or not. Default value `false`.
+* `outputs` used to configure target location for some artifacts.
+ * `output` the entry to define the desired artifact.
+  * `IncludesArtifactId` the artifactId.
+  * `directory` the target directory location of the current artifact.
+  * `outputFileName` if defined, the artifact filename will be overrided by this value.

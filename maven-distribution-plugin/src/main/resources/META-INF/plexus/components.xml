@@ -10,9 +10,11 @@
 				<phases>
 					<!--use the basic jar lifecycle bindings, add additional executions 
 						in here if you want anything extra to be run -->
+						<!-- This phase is handled by the prepare phase
 					<process-resources>
 						org.apache.maven.plugins:maven-resources-plugin:resources
 					</process-resources>
+					 -->
 					<prepare-package>
 					    fr.liglab.adele.common:maven-osgi-distribution-plugin:prepare
 					</prepare-package>
