@@ -22,7 +22,7 @@ the specific language governing permissions and limitations under the License. -
         <!-- TODO add property to get current snapshot version qualifier -->
 
         <!-- Site Title -->
-        <title>iCasa Simulator</title>
+        <title>Maven OSGi Distribution plugin</title>
         <lastStableSnapshotVersionQualifier>TODO</lastStableSnapshotVersionQualifier>
     </properties>
     <modules>
@@ -46,24 +46,38 @@ the specific language governing permissions and limitations under the License. -
 
     <!--Project Repository -->
     <repositories>
+        <!-- ADELE repositories -->
         <repository>
-            <id>iCASA.snapshot</id>
-            <name>iCASA Snapshot Repository</name>
-            <url>http://repository-icasa.forge.cloudbees.com/snapshot/</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <id>adele-central-snapshot</id>
+            <name>adele-repos</name>
+            <url>http://maven.dynamis-technologies.com/artifactory/adele-repos</url>
         </repository>
         <repository>
-            <id>iCASA.release</id>
-            <name>iCASA Release Repository</name>
-            <url>http://repository-icasa.forge.cloudbees.com/release/</url>
+            <snapshots />
+            <id>snapshots</id>
+            <name>adele-central-release</name>
+            <url>http://maven.dynamis-technologies.com/artifactory/adele-repos</url>
         </repository>
-
     </repositories>
-
     <pluginRepositories>
         <pluginRepository>
-            <id>icasa-snapshot-repository</id>
-            <name>iCASA Snapshot repository</name>
-            <url>http://repository-icasa.forge.cloudbees.com/snapshot/</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <id>central</id>
+            <name>adele-repos</name>
+            <url>http://maven.dynamis-technologies.com/artifactory/adele-repos</url>
+        </pluginRepository>
+        <!-- dependency tools repository -->
+        <pluginRepository>
+            <id>elca-services</id>
+            <url>http://el4.elca-services.ch/el4j/maven2repository</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
         </pluginRepository>
     </pluginRepositories>
 
@@ -146,7 +160,7 @@ the specific language governing permissions and limitations under the License. -
                         <phase>site-deploy</phase>
                         <configuration>
                             <!-- configure the repository -->
-                            <repositoryName>iCasa-Simulator</repositoryName>
+                            <repositoryName>osgi-distribution-plugin</repositoryName>
                             <repositoryOwner>AdeleResearchGroup</repositoryOwner>
                             <!-- end repository configuration -->
 
@@ -174,7 +188,7 @@ the specific language governing permissions and limitations under the License. -
                 </executions>
                 <configuration>
                     <!-- configure the repository -->
-                    <repositoryName>iCasa-Simulator</repositoryName>
+                    <repositoryName>osgi-distribution-plugin</repositoryName>
                     <repositoryOwner>AdeleResearchGroup</repositoryOwner>
                     <!-- end repository configuration -->
 
