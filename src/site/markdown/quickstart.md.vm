@@ -1,0 +1,168 @@
+Quickstart Guide
+================
+
+This page explains how to use the ${project.artifactId} to build your Play 2 application using Maven.
+
+Prerequisites
+-------------
+
+Create a Play 2 application using the _play_ command:
+
+    play new myFirstApp
+
+
+This command creates the Play 2 application. Obviously it's not required if you already have an existing application.
+
+Mavenization
+------------
+
+At the root of the created project, create a _pom.xml_ file with the following content:
+
+    <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+        <modelVersion>4.0.0</modelVersion>
+
+        <groupId>your.group.id</groupId>
+        <artifactId>your.artifact.id</artifactId>
+        <version>1.0-SNAPSHOT</version>
+        <name>myFirstApp</name>
+
+        <packaging>play2</packaging>
+
+        <properties>
+            <play.version>2.1.1</play.version>
+        </properties>
+
+            <repositories>
+                <repository>
+                    <id>typesafe</id>
+                    <url>http://repo.typesafe.com/typesafe/releases/</url>
+                </repository>
+            </repositories>
+
+            <dependencies>
+                <!--
+                Add your dependencies here (modules, libraries...).
+                Dependencies in the compile scope will be embedded within the application.
+                -->
+
+
+                <!-- Play Framework Dependencies -->
+                <dependency>
+                    <groupId>play</groupId>
+                    <artifactId>play_2.10</artifactId>
+                    <version>${play.version}</version>
+                    <scope>provided</scope>
+                </dependency>
+                <dependency>
+                    <groupId>play</groupId>
+                    <artifactId>play-test_2.10</artifactId>
+                    <version>${play.version}</version>
+                    <scope>provided</scope>
+                </dependency>
+
+                 <!-- the Java API is in this artifact -->
+                 <dependency>
+                     <groupId>play</groupId>
+                     <artifactId>play-java_2.10</artifactId>
+                     <version>${play.version}</version>
+                     <scope>provided</scope>
+                 </dependency>
+
+            </dependencies>
+
+        <build>
+            <!-- Play source directory -->
+            <sourceDirectory>app</sourceDirectory>
+            <testSourceDirectory>test</testSourceDirectory>
+
+            <plugins>
+
+                <plugin>
+                    <groupId>${project.groupId}</groupId>
+                    <artifactId>${project.artifactId}</artifactId>
+                    <version>${project.version}</version>
+                    <extensions>true</extensions>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>2.3.1</version>
+                    <configuration>
+                        <source>1.6</source>
+                        <target>1.6</target>
+                    </configuration>
+                </plugin>
+
+            </plugins>
+
+        </build>
+
+    </project>
+
+That's it !
+
+Usage
+-----
+
+Before starting, be sure to have the _play_ executable in your path or to have defined the _PLAY2\_HOME_ system variable
+ used by the plugin to find the Play 2 SDK (or check the next section). As shown in the previous pom file, the packaging
+  of your project must be _play2_.
+
+To define the _PLAY2\_HOME_ variable on Mac/Linux use:
+
+
+    export PLAY2_HOME=...
+    # or
+    mvn clean install -DPLAY2_HOME=...
+
+To build the application, simply run:
+
+    mvn clean install
+
+To compile and test only:
+
+    mvn test
+
+To package the application without running the tests:
+
+    mvn package -DskipTests
+
+To debug the application:
+
+    mvn play2:debug
+
+Finally, to run the application:
+
+    mvn play2:run
+
+Using the regular Maven structure
+---------------------------------
+
+By default the plugin is configured to use the Play directory structure. But it can be configured to use the Maven
+structure. Check [this page](./structure.html) for more information.
+
+Setting Play 2 location from the pom file
+-----------------------------------------
+
+The _PLAY2_ location can also be defined in the _pom.xml_ file such as in:
+
+      <plugin>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>${project.artifactId}</artifactId>
+        <version>${project.version}</version>
+        <extensions>true</extensions>
+          <configuration>
+            <play2Home>some/path/to/play-2.1.1</play2Home>
+          </configuration>
+      </plugin>
+
+The plugin is checking in this order:
+
+* the PLAY2\_HOME system variable (set with -DPLAY2\_HOME=...)
+* the _play2Home_ setting
+* the PLAY2\_HOME environment variable
+
+If _PLAY2\_HOME_ is not define, the plugin use the system _PATH_, and looks for the _play_ or _play.bat_ executable.
+
+

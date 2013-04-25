@@ -1,0 +1,35 @@
+
+Maven OSGi Distribution Plugin
+==================
+
+The ${project.artifactId} is used to package OSGi applications using Maven. Basically, it just copy all dependencies in
+specified folders, copy the provided resources and zip the result. It also supports multiple inheritance between
+distributions.
+
+Features
+--------
+
+* *Dependency Management*: all project dependencies (bundles, deployment packages, zip files and play applications) are
+embedded in the zip file.
+* *Multiple inheritance*: a distirbution can inherit from several other ones (removal of inherited file is not yet
+supported).
+
+Goals Overview
+---------------
+
+The OSGi Distribution Plugin acts on projects using the osgi-distribution packaging type during the following phases:
+
+* [${project.artifactId}:package](./package-mojo.html) packages your OSGi application as a Zip.
+* [${project.artifactId}:clean](./clean-mojo.html) cleans the project.
+
+
+Usage
+-----
+
+General instructions on how to use the ${project.artifactId} can be found on the [usage page](./usage.html).
+
+License
+-------------------
+
+The plugin is developped and maintained by the [LIG/ADELE team](http://www-adele.imag.fr).
+It is licensed under the Apache License 2.0.
