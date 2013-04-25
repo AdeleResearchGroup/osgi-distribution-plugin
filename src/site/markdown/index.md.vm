@@ -5,13 +5,16 @@ Maven OSGi Distribution Plugin
 The ${project.artifactId} is used to package OSGi applications using Maven. Basically, it just copy all dependencies in
 specified folders, copy the provided resources and zip the result. It also supports multiple inheritance between
 distributions.
+These distributions come as zip files, and can be fine tuned to have dependencies come in separate folders, with different names.
 
 Features
 --------
 
 * *Dependency Management*: all project dependencies (bundles, deployment packages, zip files and play applications) are
 embedded in the zip file.
-* *Multiple inheritance*: a distirbution can inherit from several other ones (removal of inherited file is not yet
+* *Output Structure Fine Tuning*: you can fin tune in order to have dependencies come in separate folders, with
+different names.
+* *Multiple inheritance*: a distribution can inherit from several other ones (removal of inherited file is not yet
 supported).
 
 Goals Overview
