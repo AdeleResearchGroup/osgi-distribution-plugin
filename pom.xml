@@ -229,12 +229,12 @@ the specific language governing permissions and limitations under the License. -
 
     <distributionManagement>
         <repository>
-            <id>cloudbees-adele-release</id>
+            <id>icasa-deploy-cloudbees-release</id>
             <name>Cloudbees Private Repository</name>
             <url>dav:https://repository-icasa.forge.cloudbees.com/release</url>
         </repository>
         <snapshotRepository>
-            <id>cloudbees-adele-release</id>
+            <id>icasa-deploy-cloudbees-snapshot</id>
             <name>Cloudbees Snapshot Repository</name>
             <url>dav:https://repository-icasa.forge.cloudbees.com/snapshot</url>
         </snapshotRepository>
