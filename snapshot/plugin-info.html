@@ -75,12 +75,10 @@
         Introduction</a>
             </li>
                   
-      <li>
+      <li class="active">
     
-                          <a href="plugin-info.html" title="Goals">
-          <i class="none"></i>
-        Goals</a>
-            </li>
+            <a href="#"><i class="none"></i>Goals</a>
+          </li>
                   
       <li>
     
@@ -110,104 +108,62 @@
         Changelog</a>
             </li>
                               <li class="nav-header">Project Documentation</li>
-                                                                                                                                                                                                                                                                                                  
+                                                                                                                                                                                                                                                                                        
       <li>
     
                           <a href="project-info.html" title="Project Information">
-          <i class="icon-chevron-down"></i>
+          <i class="icon-chevron-right"></i>
         Project Information</a>
+                  </li>
+                                                                                                                                                                        
+      <li>
+    
+                          <a href="project-reports.html" title="Project Reports">
+          <i class="icon-chevron-down"></i>
+        Project Reports</a>
                     <ul class="nav nav-list">
-                      
-      <li>
-    
-                          <a href="distribution-management.html" title="Distribution Management">
-          <i class="none"></i>
-        Distribution Management</a>
-            </li>
-                      
-      <li>
-    
-                          <a href="index.html" title="About">
-          <i class="none"></i>
-        About</a>
-            </li>
-                      
-      <li>
-    
-                          <a href="dependencies.html" title="Dependencies">
-          <i class="none"></i>
-        Dependencies</a>
-            </li>
-                      
-      <li>
-    
-                          <a href="issue-tracking.html" title="Issue Tracking">
-          <i class="none"></i>
-        Issue Tracking</a>
-            </li>
-                      
-      <li>
-    
-                          <a href="plugins.html" title="Project Plugins">
-          <i class="none"></i>
-        Project Plugins</a>
-            </li>
-                      
-      <li>
-    
-                          <a href="integration.html" title="Continuous Integration">
-          <i class="none"></i>
-        Continuous Integration</a>
-            </li>
-                      
-      <li>
-    
-                          <a href="license.html" title="Project License">
-          <i class="none"></i>
-        Project License</a>
-            </li>
                       
       <li class="active">
     
-            <a href="#"><i class="none"></i>Mailing Lists</a>
+            <a href="#"><i class="none"></i>Plugin Documentation</a>
           </li>
                       
       <li>
     
-                          <a href="team-list.html" title="Project Team">
+                          <a href="csslint.html" title="csslint">
           <i class="none"></i>
-        Project Team</a>
+        csslint</a>
             </li>
                       
       <li>
     
-                          <a href="source-repository.html" title="Source Repository">
+                          <a href="jshint.html" title="jshint">
           <i class="none"></i>
-        Source Repository</a>
+        jshint</a>
             </li>
                       
       <li>
     
-                          <a href="plugin-management.html" title="Plugin Management">
+                          <a href="jsdoc/index.html" title="jsdoc">
           <i class="none"></i>
-        Plugin Management</a>
+        jsdoc</a>
             </li>
                       
       <li>
     
-                          <a href="project-summary.html" title="Project Summary">
+                          <a href="jslint.html" title="jslint">
           <i class="none"></i>
-        Project Summary</a>
+        jslint</a>
+            </li>
+                      
+      <li>
+    
+                          <a href="surefire-report.html" title="Surefire Report">
+          <i class="none"></i>
+        Surefire Report</a>
             </li>
               </ul>
         </li>
-                                                                                                                                                              
-      <li>
-    
-                          <a href="project-reports.html" title="Project Reports">
-          <i class="icon-chevron-right"></i>
-        Project Reports</a>
-                  </li>
             </ul>
                 
             
@@ -228,7 +184,39 @@
                 
         <div id="bodyColumn"  class="span9" >
                                   
-            <div class="section"><h2>Project Mailing Lists<a name="Project_Mailing_Lists"></a></h2><a name="Project_Mailing_Lists"></a><p>There are no mailing lists currently associated with this project.</p></div>
+            <a name="Plugin_Documentation"></a><div class="section"><h2>Plugin Documentation<a name="Plugin_Documentation"></a></h2><p>Goals available for this plugin:</p><table border="0" class="table table-striped"><tr class="a"><th>Goal</th><th>Description</th></tr><tr class="b"><td><a href="help-mojo.html">osgi-distribution:help</a></td><td>Display help information on maven-osgi-distribution-plugin.<br />
+ Call 
+<pre>
+  mvn osgi-distribution:help -Ddetail=true -Dgoal=&lt;goal-name&gt;
+</pre>
+
+to display parameter details.</td></tr><tr class="a"><td><a href="prepare-mojo.html">osgi-distribution:prepare</a></td><td>Goal which prepares a distribution for the zip mojo.</td></tr><tr class="b"><td><a href="zip-mojo.html">osgi-distribution:zip</a></td><td>Zip all pom resources content in a .zip file</td></tr></table><a name="System_Requirements"></a><div class="section"><h3>System Requirements<a name="System_Requirements"></a></h3><p>The following specifies the minimum requirements to run this Maven plugin:</p><table border="0" class="table table-striped"><tr class="a"><td>Maven</td><td>2.0</td></tr><tr class="b"><td>JDK</td><td>1.5</td></tr><tr class="a"><td>Memory</td><td>No minimum requirement.</td></tr><tr class="b"><td>Disk Space</td><td>No minimum requirement.</td></tr></table></div><a name="Usage"></a><div class="section"><h3>Usage<a name="Usage"></a></h3><p>You should specify the version in your project's plugin configuration:</p><div class="source"><pre class="prettyprint linenums">&lt;project&gt;
+  ...
+  &lt;build&gt;
+    &lt;!-- To define the plugin version in your parent POM --&gt;
+    &lt;pluginManagement&gt;
+      &lt;plugins&gt;
+        &lt;plugin&gt;
+          &lt;groupId&gt;fr.liglab.adele.common&lt;/groupId&gt;
+          &lt;artifactId&gt;maven-osgi-distribution-plugin&lt;/artifactId&gt;
+          &lt;version&gt;1.0.1-SNAPSHOT&lt;/version&gt;
+        &lt;/plugin&gt;
+        ...
+      &lt;/plugins&gt;
+    &lt;/pluginManagement&gt;
+    &lt;!-- To use the plugin goals in your POM or parent POM --&gt;
+    &lt;plugins&gt;
+      &lt;plugin&gt;
+        &lt;groupId&gt;fr.liglab.adele.common&lt;/groupId&gt;
+        &lt;artifactId&gt;maven-osgi-distribution-plugin&lt;/artifactId&gt;
+        &lt;version&gt;1.0.1-SNAPSHOT&lt;/version&gt;
+      &lt;/plugin&gt;
+      ...
+    &lt;/plugins&gt;
+  &lt;/build&gt;
+  ...
+&lt;/project&gt;
+</pre></div><p>For more information, see <a class="externalLink" href="http://maven.apache.org/guides/mini/guide-configuring-plugins.html">&quot;Guide to Configuring Plug-ins&quot;</a></p></div></div>
                   </div>
             </div>
           </div>
