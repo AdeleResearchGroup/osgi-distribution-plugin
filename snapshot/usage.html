@@ -108,7 +108,7 @@
         Changelog</a>
             </li>
                               <li class="nav-header">Project Documentation</li>
-                                                                                                                                                                                                                                                                                                                            
+                                                                                                                                                                                                                                                                                        
       <li>
     
                           <a href="project-info.html" title="Project Information">
@@ -154,7 +154,7 @@ or a parent <em>pom.xml</em>.</p>
             &lt;plugins&gt;
                 &lt;plugin&gt;
                     &lt;groupId&gt;fr.liglab.adele.common&lt;/groupId&gt;
-                    &lt;artifactId&gt;distribution-plugin-reactor&lt;/artifactId&gt;
+                    &lt;artifactId&gt;maven-osgi-distribution-plugin&lt;/artifactId&gt;
                     &lt;version&gt;1.0.1-SNAPSHOT&lt;/version&gt;
                 &lt;/plugin&gt;
             &lt;/plugins&gt;
@@ -164,7 +164,7 @@ or a parent <em>pom.xml</em>.</p>
 &lt;/project&gt;
 </code></pre>
 
-<p>To use the distribution-plugin-reactor Plugin, you need to add the following configuration to your <em>pom.xml</em></p>
+<p>To use the maven-osgi-distribution-plugin Plugin, you need to add the following configuration to your <em>pom.xml</em></p>
 
 <pre><code>&lt;project&gt;
     [...]
@@ -174,7 +174,7 @@ or a parent <em>pom.xml</em>.</p>
         &lt;plugins&gt;
             &lt;plugin&gt;
                 &lt;groupId&gt;fr.liglab.adele.common&lt;/groupId&gt;
-                &lt;artifactId&gt;distribution-plugin-reactor&lt;/artifactId&gt;
+                &lt;artifactId&gt;maven-osgi-distribution-plugin&lt;/artifactId&gt;
                 &lt;version&gt;1.0.1-SNAPSHOT&lt;/version&gt;
                 &lt;extensions&gt;true&lt;/extensions&gt;
             &lt;/plugin&gt;
@@ -184,7 +184,7 @@ or a parent <em>pom.xml</em>.</p>
 &lt;/project&gt;
 </code></pre>
 
-<p>The distribution-plugin-reactor Plugin is invoked during the:</p>
+<p>The maven-osgi-distribution-plugin Plugin is invoked during the:</p>
 
 <ul>
 <li><em>process-resources</em> phase : copy dependencies to the configured directories</li>
@@ -269,7 +269,7 @@ deployment packages, you can ask to flatten all deployment packages using flatte
         &lt;plugins&gt;
             &lt;plugin&gt;
                 &lt;groupId&gt;fr.liglab.adele.common&lt;/groupId&gt;
-                &lt;artifactId&gt;distribution-plugin-reactor&lt;/artifactId&gt;
+                &lt;artifactId&gt;maven-osgi-distribution-plugin&lt;/artifactId&gt;
                 &lt;version&gt;1.0.1-SNAPSHOT&lt;/version&gt;
                 &lt;extensions&gt;true&lt;/extensions&gt;
                 &lt;configuration&gt;
