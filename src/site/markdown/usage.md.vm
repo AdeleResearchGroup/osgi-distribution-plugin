@@ -24,7 +24,7 @@ To use the ${project.artifactId} Plugin, you need to add the following configura
 
     <project>
         [...]
-        <packaging>play2</packaging>
+        <packaging>osgi-distribution</packaging>
         [...]
         <build>
             <plugins>
@@ -119,7 +119,7 @@ deployment packages, you can ask to flatten all deployment packages using flatte
 
     <project>
         [...]
-        <packaging>play2</packaging>
+        <packaging>osgi-distribution</packaging>
         [...]
         <build>
             <plugins>
