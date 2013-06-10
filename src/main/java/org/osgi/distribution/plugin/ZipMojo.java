@@ -8,8 +8,10 @@ import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.project.MavenProject;
+import org.codehaus.plexus.archiver.ArchiveEntry;
 import org.codehaus.plexus.archiver.ArchiverException;
 import org.codehaus.plexus.archiver.zip.ZipArchiver;
+import org.codehaus.plexus.util.DirectoryScanner;
 import org.codehaus.plexus.util.FileUtils;
 
 /**
@@ -114,7 +116,7 @@ public class ZipMojo
     {
         File zipFile = new File( this.getProject().getBuild().getDirectory(), this.getProject().getBuild().getFinalName()
             + ".zip" );
-        ZipArchiver archiver = new ZipArchiver();
+        ZipArchiver archiver = new InternalZipArchiver();
         
         archiver.setDestFile( zipFile );
         archiver.setIncludeEmptyDirs( true );
@@ -150,6 +152,66 @@ public class ZipMojo
     public void setProject( MavenProject project )
     {
         this.project = project;
+    }
+
+    public class InternalZipArchiver extends ZipArchiver {
+
+        public void addDirectory( File directory, String[] includes, String[] excludes )
+                throws ArchiverException
+        {
+            DirectoryScanner scanner = new DirectoryScanner();
+
+            if ( includes != null )
+            {
+                scanner.setIncludes( includes );
+            }
+
+            if ( excludes != null )
+            {
+                scanner.setExcludes( excludes );
+            }
+
+            if ( !directory.isDirectory() )
+            {
+                throw new ArchiverException( directory.getAbsolutePath() + " isn't a directory." );
+            }
+
+            String basedir = directory.getAbsolutePath();
+            scanner.setBasedir( basedir );
+            scanner.scan();
+
+            if ( getIncludeEmptyDirs() )
+            {
+                String[] dirs = scanner.getIncludedDirectories();
+
+                for ( int i = 0; i < dirs.length; i++ )
+                {
+                    String sourceDir = dirs[i].replace( '\\', '/' );
+
+                    String targetDir =  sourceDir;
+
+                    getDirs().put(
+                            targetDir,
+                            ArchiveEntry.createEntry(targetDir, new File(basedir, sourceDir),
+                                    getDefaultFileMode(), getDefaultDirectoryMode()) );
+                }
+            }
+
+            String[] files = scanner.getIncludedFiles();
+
+            for ( int i = 0; i < files.length; i++ )
+            {
+                String sourceFile = files[i].replace( '\\', '/' );
+
+                String targetFile =  sourceFile;
+                int permission = getDefaultFileMode();
+
+                if (targetFile.endsWith(".sh")) {
+                    permission = 0777;
+                }
+                addFile(new File(basedir, targetFile), targetFile, permission);
+            }
+        }
     }
 
 }
