@@ -11,7 +11,7 @@
 
     <properties>
         <productName>OSGi Distribution Plugin</productName>
-        <projectName>Distribution Plugin Reactor</projectName>
+        <projectName>Distribution Plugin</projectName>
         <webdavPluginVersion>2.2</webdavPluginVersion>
 
         <site.path>snapshot</site.path>

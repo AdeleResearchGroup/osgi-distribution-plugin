@@ -149,9 +149,9 @@ public class PrepareMojo extends AbstractMojo {
 
 	private String generateWinScriptContent() {
 		StringBuilder content = new StringBuilder();
-		content.append("cd ");
+		content.append("cd \"");
 		content.append(this.project.getBuild().getDirectory()).append(File.separator).append(defaultDistribDirectoryName);
-		content.append('\n');
+		content.append("\"\n");
 		content.append("java -jar bin\\felix.jar");
 		return content.toString();
 	}
@@ -161,9 +161,9 @@ public class PrepareMojo extends AbstractMojo {
 	 */
 	private String generateUnixScriptContent() {
 		StringBuilder content = new StringBuilder("#!/usr/bin/env sh\n");
-		content.append("cd ");
+		content.append("cd \"");
 		content.append(this.project.getBuild().getDirectory()).append(File.separator).append(defaultDistribDirectoryName);
-		content.append('\n');
+		content.append("\"\n");
 		content.append("exec java -jar bin/felix.jar");
 		return content.toString();
 	}
