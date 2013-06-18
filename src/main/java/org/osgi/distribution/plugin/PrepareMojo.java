@@ -152,7 +152,7 @@ public class PrepareMojo extends AbstractMojo {
 		content.append("cd \"");
 		content.append(this.project.getBuild().getDirectory()).append(File.separator).append(defaultDistribDirectoryName);
 		content.append("\"\n");
-		content.append("java -jar bin\\felix.jar");
+		content.append("java %* -jar bin\\felix.jar");
 		return content.toString();
 	}
 
@@ -164,7 +164,7 @@ public class PrepareMojo extends AbstractMojo {
 		content.append("cd \"");
 		content.append(this.project.getBuild().getDirectory()).append(File.separator).append(defaultDistribDirectoryName);
 		content.append("\"\n");
-		content.append("exec java -jar bin/felix.jar");
+		content.append("exec java $@ -jar bin/felix.jar");
 		return content.toString();
 	}
 
