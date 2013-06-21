@@ -239,66 +239,12 @@
 
 <p>That's it !</p>
 
-<h2>Usage</h2>
+<h2>Building</h2>
 
-<p>An output configuration example :</p>
+<p>In order to build the new distribution, you must:</p>
 
-<pre><code>&lt;outputs&gt;
-  &lt;output&gt;
-     &lt;IncludesArtifactId&gt;org.apache.felix.main&lt;/IncludesArtifactId&gt;
-     &lt;directory&gt;bin&lt;/directory&gt;
-     &lt;outputFileName&gt;felix.jar&lt;/outputFileName&gt;
-  &lt;/output&gt;
-  &lt;output&gt;
-     &lt;IncludesArtifactId&gt;org.apache.felix.fileinstall&lt;/IncludesArtifactId&gt;
-     &lt;directory&gt;bundles&lt;/directory&gt;
-  &lt;/output&gt;
-&lt;/outputs&gt;
+<pre><code>mvn clean install
 </code></pre>
-
-<p>Results in the following :</p>
-
-<ul>
-<li>The felix dependency will be redirected to the "bin" directory, and will be renamed to "felix.jar".</li>
-<li>The fileinstall dependency will be redirected to the "bundles" directory.</li>
-<li>All other dependencies go to the "load" folder (default behavior).</li>
-</ul>
-
-<p>Projects using this plugin need to use the "osgi-distribution" packaging type, and call the plugin in their plugins section.</p>
-
-<pre><code>&lt;build&gt;
-  &lt;plugins&gt;
-     &lt;plugin&gt;
-           &lt;groupId&gt;fr.liglab.adele.common&lt;/groupId&gt;
-           &lt;artifactId&gt;maven-osgi-distribution-plugin&lt;/artifactId&gt;
-           &lt;version&gt;1.0.1&lt;/version&gt;
-           &lt;extensions&gt;true&lt;/extensions&gt;
-           &lt;configuration&gt;
-              &lt;defaultOutputDirectory&gt;bundle&lt;/defaultOutputDirectory&gt;
-              &lt;generateScripts&gt;true&lt;/generateScripts&gt;
-              &lt;outputs&gt;
-                 ...
-              &lt;/outputs&gt;
-           &lt;/configuration&gt;
-     &lt;/plugin&gt;
-  &lt;/plugins&gt;
-&lt;/build&gt;
-</code></pre>
-
-<p>To run the plugin, just call the "install" goal on your project.</p>
-
-<p>Plugin configuration options:</p>
-
-<ul>
-<li><code>defaultOutputDirectory</code> to specifiy the location of the artifacts declared in the dependency section. Except for artifacts defined in the <code>outputs</code> section. Default value <code>load</code>.</li>
-<li><code>generateScripts</code> to generate launcher temporal scripts (useful while testing distribution) Default value <code>false</code>.</li>
-<li><code>flattenDP</code> to specify if Deployment-Packages dependencies will be flatten in the distribution or not. Default value <code>false</code>.</li>
-<li><code>outputs</code> used to configure target location for some artifacts.</li>
-<li><code>output</code> the entry to define the desired artifact.</li>
-<li><code>IncludesArtifactId</code> the artifactId.</li>
-<li><code>directory</code> the target directory location of the current artifact.</li>
-<li><code>outputFileName</code> if defined, the artifact filename will be overrided by this value.</li>
-</ul>
 
                   </div>
             </div>
