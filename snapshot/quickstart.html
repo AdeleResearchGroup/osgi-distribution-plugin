@@ -51,7 +51,7 @@
                 
             
                   <li id="publishDate">Last Published: 2013-06-21</li>
-                  <li class="divider">|</li> <li id="projectVersion">Version: 1.0.1</li>
+                  <li class="divider">|</li> <li id="projectVersion">Version: 1.0.2-SNAPSHOT</li>
                       
                 
             
@@ -144,7 +144,7 @@
                                   
             <h1>Quickstart Guide</h1>
 
-<p>This page explains how to use the maven-osgi-distribution-plugin to build your Play 2 application using Maven.</p>
+<p>This page explains how to use the maven-osgi-distribution-plugin to build OSGi distributions.</p>
 
 <h2>Prerequisites</h2>
 
@@ -165,13 +165,11 @@
     &lt;groupId&gt;your.group.id&lt;/groupId&gt;
     &lt;artifactId&gt;your.artifact.id&lt;/artifactId&gt;
     &lt;version&gt;1.0-SNAPSHOT&lt;/version&gt;
-    &lt;name&gt;myFirstApp&lt;/name&gt;
+    &lt;name&gt;myFirstDistribution&lt;/name&gt;
 
-    &lt;packaging&gt;play2&lt;/packaging&gt;
+    &lt;packaging&gt;osgi-distribution&lt;/packaging&gt;
 
-    &lt;properties&gt;
-        &lt;play.version&gt;2.1.1&lt;/play.version&gt;
-    &lt;/properties&gt;
+
 
         &lt;repositories&gt;
             &lt;repository&gt;
@@ -181,59 +179,76 @@
         &lt;/repositories&gt;
 
         &lt;dependencies&gt;
-            &lt;!--
-            Add your dependencies here (modules, libraries...).
-            Dependencies in the compile scope will be embedded within the application.
-            --&gt;
-
-
-            &lt;!-- Play Framework Dependencies --&gt;
-            &lt;dependency&gt;
-                &lt;groupId&gt;play&lt;/groupId&gt;
-                &lt;artifactId&gt;play_2.10&lt;/artifactId&gt;
-                &lt;version&gt;${play.version}&lt;/version&gt;
-                &lt;scope&gt;provided&lt;/scope&gt;
-            &lt;/dependency&gt;
-            &lt;dependency&gt;
-                &lt;groupId&gt;play&lt;/groupId&gt;
-                &lt;artifactId&gt;play-test_2.10&lt;/artifactId&gt;
-                &lt;version&gt;${play.version}&lt;/version&gt;
-                &lt;scope&gt;provided&lt;/scope&gt;
-            &lt;/dependency&gt;
-
-             &lt;!-- the Java API is in this artifact --&gt;
-             &lt;dependency&gt;
-                 &lt;groupId&gt;play&lt;/groupId&gt;
-                 &lt;artifactId&gt;play-java_2.10&lt;/artifactId&gt;
-                 &lt;version&gt;${play.version}&lt;/version&gt;
-                 &lt;scope&gt;provided&lt;/scope&gt;
-             &lt;/dependency&gt;
-
+               &lt;dependency&gt;
+                 &lt;groupId&gt;org.apache.felix&lt;/groupId&gt;
+                 &lt;artifactId&gt;org.apache.felix.main&lt;/artifactId&gt;
+                 &lt;version&gt;4.0.3&lt;/version&gt;
+              &lt;/dependency&gt;   
+              &lt;!-- Example of distribution bundles--&gt;
+              &lt;dependency&gt;
+                 &lt;groupId&gt;org.apache.felix&lt;/groupId&gt;
+                 &lt;artifactId&gt;org.apache.felix.fileinstall&lt;/artifactId&gt;
+                 &lt;version&gt;3.1.4&lt;/version&gt;
+              &lt;/dependency&gt;
+              &lt;dependency&gt;
+                 &lt;groupId&gt;org.apache.felix&lt;/groupId&gt;
+                 &lt;artifactId&gt;org.apache.felix.gogo.command&lt;/artifactId&gt;
+                 &lt;version&gt;0.12.0&lt;/version&gt;
+              &lt;/dependency&gt;
+              &lt;dependency&gt;
+                 &lt;groupId&gt;org.apache.felix&lt;/groupId&gt;
+                 &lt;artifactId&gt;org.apache.felix.gogo.runtime&lt;/artifactId&gt;
+                 &lt;version&gt;0.10.0&lt;/version&gt;
+              &lt;/dependency&gt;
+              &lt;dependency&gt;
+                 &lt;groupId&gt;org.apache.felix&lt;/groupId&gt;
+                 &lt;artifactId&gt;org.apache.felix.gogo.shell&lt;/artifactId&gt;
+                 &lt;version&gt;0.10.0&lt;/version&gt;
+              &lt;/dependency&gt;
+              &lt;dependency&gt;
+                 &lt;groupId&gt;org.apache.felix&lt;/groupId&gt;
+                 &lt;artifactId&gt;org.apache.felix.ipojo.gogo&lt;/artifactId&gt;
+                 &lt;version&gt;1.10.1&lt;/version&gt;
+              &lt;/dependency&gt;
+              &lt;dependency&gt;
+                 &lt;groupId&gt;org.apache.felix&lt;/groupId&gt;
+                 &lt;artifactId&gt;org.apache.felix.ipojo&lt;/artifactId&gt;
+                 &lt;version&gt;1.10.1&lt;/version&gt;
+              &lt;/dependency&gt;
+              &lt;dependency&gt;
+                 &lt;groupId&gt;org.apache.felix&lt;/groupId&gt;
+                 &lt;artifactId&gt;org.apache.felix.log&lt;/artifactId&gt;
+              &lt;/dependency&gt;
+              &lt;dependency&gt;
+                 &lt;groupId&gt;org.osgi&lt;/groupId&gt;
+                 &lt;artifactId&gt;org.osgi.compendium&lt;/artifactId&gt;
+                 &lt;version&gt;4.2.0&lt;/version&gt;
+              &lt;/dependency&gt;
         &lt;/dependencies&gt;
 
     &lt;build&gt;
-        &lt;!-- Play source directory --&gt;
-        &lt;sourceDirectory&gt;app&lt;/sourceDirectory&gt;
-        &lt;testSourceDirectory&gt;test&lt;/testSourceDirectory&gt;
 
         &lt;plugins&gt;
 
             &lt;plugin&gt;
                 &lt;groupId&gt;fr.liglab.adele.common&lt;/groupId&gt;
                 &lt;artifactId&gt;maven-osgi-distribution-plugin&lt;/artifactId&gt;
-                &lt;version&gt;1.0.1&lt;/version&gt;
+                &lt;version&gt;1.0.2-SNAPSHOT&lt;/version&gt;
                 &lt;extensions&gt;true&lt;/extensions&gt;
+                &lt;configuration&gt;
+                    &lt;defaultOutputDirectory&gt;bundle&lt;/defaultOutputDirectory&gt;
+                    &lt;generateScripts&gt;true&lt;/generateScripts&gt;
+                    &lt;outputs&gt;
+                       &lt;output&gt;
+                          &lt;IncludesArtifactId&gt;org.apache.felix.main&lt;/IncludesArtifactId&gt;
+                          &lt;directory&gt;bin&lt;/directory&gt;
+                          &lt;outputFileName&gt;felix.jar&lt;/outputFileName&gt;
+                       &lt;/output&gt;
+                    &lt;/outputs&gt;
+                 &lt;/configuration&gt;
             &lt;/plugin&gt;
 
-            &lt;plugin&gt;
-                &lt;groupId&gt;org.apache.maven.plugins&lt;/groupId&gt;
-                &lt;artifactId&gt;maven-compiler-plugin&lt;/artifactId&gt;
-                &lt;version&gt;2.3.1&lt;/version&gt;
-                &lt;configuration&gt;
-                    &lt;source&gt;1.6&lt;/source&gt;
-                    &lt;target&gt;1.6&lt;/target&gt;
-                &lt;/configuration&gt;
-            &lt;/plugin&gt;
+
 
         &lt;/plugins&gt;
 
@@ -246,71 +261,63 @@
 
 <h2>Usage</h2>
 
-<p>Before starting, be sure to have the <em>play</em> executable in your path or to have defined the <em>PLAY2_HOME</em> system variable
- used by the plugin to find the Play 2 SDK (or check the next section). As shown in the previous pom file, the packaging
-  of your project must be <em>play2</em>.</p>
+<p>An output configuration example :</p>
 
-<p>To define the <em>PLAY2_HOME</em> variable on Mac/Linux use:</p>
+<p>```xml
+ <outputs>
+    <output>
+        &lt;IncludesArtifactId>org.apache.felix.main</IncludesArtifactId>
+        <directory>bin</directory>
+        <outputFileName>felix.jar</outputFileName>
+    </output>
+    <output>
+        &lt;IncludesArtifactId>org.apache.felix.fileinstall</IncludesArtifactId>
+        <directory>bundles</directory>
+    </output>
+</outputs>
+```</p>
 
-<pre><code>export PLAY2_HOME=...
-# or
-mvn clean install -DPLAY2_HOME=...
-</code></pre>
-
-<p>To build the application, simply run:</p>
-
-<pre><code>mvn clean install
-</code></pre>
-
-<p>To compile and test only:</p>
-
-<pre><code>mvn test
-</code></pre>
-
-<p>To package the application without running the tests:</p>
-
-<pre><code>mvn package -DskipTests
-</code></pre>
-
-<p>To debug the application:</p>
-
-<pre><code>mvn play2:debug
-</code></pre>
-
-<p>Finally, to run the application:</p>
-
-<pre><code>mvn play2:run
-</code></pre>
-
-<h2>Using the regular Maven structure</h2>
-
-<p>By default the plugin is configured to use the Play directory structure. But it can be configured to use the Maven
-structure. Check <a href="./structure.html">this page</a> for more information.</p>
-
-<h2>Setting Play 2 location from the pom file</h2>
-
-<p>The <em>PLAY2</em> location can also be defined in the <em>pom.xml</em> file such as in:</p>
-
-<pre><code>  &lt;plugin&gt;
-    &lt;groupId&gt;fr.liglab.adele.common&lt;/groupId&gt;
-    &lt;artifactId&gt;maven-osgi-distribution-plugin&lt;/artifactId&gt;
-    &lt;version&gt;1.0.1&lt;/version&gt;
-    &lt;extensions&gt;true&lt;/extensions&gt;
-      &lt;configuration&gt;
-        &lt;play2Home&gt;some/path/to/play-2.1.1&lt;/play2Home&gt;
-      &lt;/configuration&gt;
-  &lt;/plugin&gt;
-</code></pre>
-
-<p>The plugin is checking in this order:</p>
+<p>Results in the following :</p>
 
 <ul>
-<li>the PLAY2_HOME system variable (set with -DPLAY2_HOME=...)</li>
-<li>the <em>play2Home</em> setting</li>
-<li>the PLAY2_HOME environment variable</li>
+<li>The felix dependency will be redirected to the "bin" directory, and will be renamed to "felix.jar".</li>
+<li>The fileinstall dependency will be redirected to the "bundles" directory.</li>
+<li>All other dependencies go to the "load" folder (default behavior).</li>
 </ul>
 
-<p>If <em>PLAY2_HOME</em> is not define, the plugin use the system <em>PATH</em>, and looks for the <em>play</em> or <em>play.bat</em> executable.</p>
+<p>Projects using this plugin need to use the "osgi-distribution" packaging type, and call the plugin in their plugins section.</p>
+
+<p>```xml
+<build>
+    <plugins>
+        <plugin>
+            <groupId>fr.liglab.adele.common</groupId>
+            <artifactId>maven-osgi-distribution-plugin</artifactId>
+            <version>1.0.2-SNAPSHOT</version>
+            <extensions>true</extensions>
+            <configuration>
+                <defaultOutputDirectory>bundle</defaultOutputDirectory>
+                <generateScripts>true</generateScripts>
+                <outputs>
+                    ...
+                </outputs>
+            </configuration>
+        </plugin>
+    </plugins>
+</build>
+```</p>
+
+<p>To run the plugin, just call the "install" goal on your project.</p>
+
+<p>Plugin configuration options
+ * <code>defaultOutputDirectory</code> to specifiy the location of the artifacts declared in the dependency section. Except for artifacts defined in the <code>outputs</code> section. Default value <code>load</code>.
+ * <code>generateScripts</code> to generate launcher temporal scripts (useful while testing distribution) Default value <code>false</code>.
+ * <code>flattenDP</code> to specify if Deployment-Packages dependencies will be flatten in the distribution or not. Default value <code>false</code>.
+ * <code>outputs</code> used to configure target location for some artifacts.
+ * <code>output</code> the entry to define the desired artifact.
+ * <code>IncludesArtifactId</code> the artifactId.
+ * <code>directory</code> the target directory location of the current artifact.
+ * <code>outputFileName</code> if defined, the artifact filename will be overrided by this value.</p>
 
                   </div>
             </div>
