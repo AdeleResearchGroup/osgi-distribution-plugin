@@ -157,17 +157,13 @@
     &lt;artifactId&gt;your.artifact.id&lt;/artifactId&gt;
     &lt;version&gt;1.0-SNAPSHOT&lt;/version&gt;
     &lt;name&gt;myFirstDistribution&lt;/name&gt;
-
     &lt;packaging&gt;osgi-distribution&lt;/packaging&gt;
-
-
-
-        &lt;repositories&gt;
-            &lt;repository&gt;
-                &lt;id&gt;typesafe&lt;/id&gt;
-                &lt;url&gt;http://repo.typesafe.com/typesafe/releases/&lt;/url&gt;
-            &lt;/repository&gt;
-        &lt;/repositories&gt;
+    &lt;repositories&gt;
+        &lt;repository&gt;
+           &lt;id&gt;typesafe&lt;/id&gt;
+           &lt;url&gt;http://repo.typesafe.com/typesafe/releases/&lt;/url&gt;
+        &lt;/repository&gt;
+    &lt;/repositories&gt;
 
         &lt;dependencies&gt;
                &lt;dependency&gt;
@@ -218,9 +214,7 @@
         &lt;/dependencies&gt;
 
     &lt;build&gt;
-
         &lt;plugins&gt;
-
             &lt;plugin&gt;
                 &lt;groupId&gt;fr.liglab.adele.common&lt;/groupId&gt;
                 &lt;artifactId&gt;maven-osgi-distribution-plugin&lt;/artifactId&gt;
@@ -238,13 +232,8 @@
                     &lt;/outputs&gt;
                  &lt;/configuration&gt;
             &lt;/plugin&gt;
-
-
-
-        &lt;/plugins&gt;
-
+      &lt;/plugins&gt;
     &lt;/build&gt;
-
 &lt;/project&gt;
 </code></pre>
 
@@ -254,17 +243,17 @@
 
 <p>An output configuration example :</p>
 
-<p><outputs>
-    <output>
-        &lt;IncludesArtifactId>org.apache.felix.main</IncludesArtifactId>
-        <directory>bin</directory>
-        <outputFileName>felix.jar</outputFileName>
-    </output>
-    <output>
-        &lt;IncludesArtifactId>org.apache.felix.fileinstall</IncludesArtifactId>
-        <directory>bundles</directory>
-    </output>
-</outputs></p>
+<p>   <outputs>
+      <output>
+         &lt;IncludesArtifactId>org.apache.felix.main</IncludesArtifactId>
+         <directory>bin</directory>
+         <outputFileName>felix.jar</outputFileName>
+      </output>
+      <output>
+         &lt;IncludesArtifactId>org.apache.felix.fileinstall</IncludesArtifactId>
+         <directory>bundles</directory>
+      </output>
+   </outputs></p>
 
 <p>Results in the following :</p>
 
@@ -276,23 +265,23 @@
 
 <p>Projects using this plugin need to use the "osgi-distribution" packaging type, and call the plugin in their plugins section.</p>
 
-<p><build>
-    <plugins>
-        <plugin>
-            <groupId>fr.liglab.adele.common</groupId>
-            <artifactId>maven-osgi-distribution-plugin</artifactId>
-            <version>1.0.1</version>
-            <extensions>true</extensions>
-            <configuration>
-                <defaultOutputDirectory>bundle</defaultOutputDirectory>
-                <generateScripts>true</generateScripts>
-                <outputs>
-                    ...
-                </outputs>
-            </configuration>
-        </plugin>
-    </plugins>
-</build></p>
+<p>   <build>
+      <plugins>
+         <plugin>
+               <groupId>fr.liglab.adele.common</groupId>
+               <artifactId>maven-osgi-distribution-plugin</artifactId>
+               <version>1.0.1</version>
+               <extensions>true</extensions>
+               <configuration>
+                  <defaultOutputDirectory>bundle</defaultOutputDirectory>
+                  <generateScripts>true</generateScripts>
+                  <outputs>
+                     ...
+                  </outputs>
+               </configuration>
+         </plugin>
+      </plugins>
+   </build></p>
 
 <p>To run the plugin, just call the "install" goal on your project.</p>
 
