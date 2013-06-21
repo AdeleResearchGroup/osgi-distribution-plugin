@@ -157,17 +157,13 @@
     &lt;artifactId&gt;your.artifact.id&lt;/artifactId&gt;
     &lt;version&gt;1.0-SNAPSHOT&lt;/version&gt;
     &lt;name&gt;myFirstDistribution&lt;/name&gt;
-
     &lt;packaging&gt;osgi-distribution&lt;/packaging&gt;
-
-
-
-        &lt;repositories&gt;
-            &lt;repository&gt;
-                &lt;id&gt;typesafe&lt;/id&gt;
-                &lt;url&gt;http://repo.typesafe.com/typesafe/releases/&lt;/url&gt;
-            &lt;/repository&gt;
-        &lt;/repositories&gt;
+    &lt;repositories&gt;
+        &lt;repository&gt;
+           &lt;id&gt;typesafe&lt;/id&gt;
+           &lt;url&gt;http://repo.typesafe.com/typesafe/releases/&lt;/url&gt;
+        &lt;/repository&gt;
+    &lt;/repositories&gt;
 
         &lt;dependencies&gt;
                &lt;dependency&gt;
@@ -218,9 +214,7 @@
         &lt;/dependencies&gt;
 
     &lt;build&gt;
-
         &lt;plugins&gt;
-
             &lt;plugin&gt;
                 &lt;groupId&gt;fr.liglab.adele.common&lt;/groupId&gt;
                 &lt;artifactId&gt;maven-osgi-distribution-plugin&lt;/artifactId&gt;
@@ -238,77 +232,24 @@
                     &lt;/outputs&gt;
                  &lt;/configuration&gt;
             &lt;/plugin&gt;
-
-
-
-        &lt;/plugins&gt;
-
+      &lt;/plugins&gt;
     &lt;/build&gt;
-
 &lt;/project&gt;
 </code></pre>
 
 <p>That's it !</p>
 
-<h2>Usage</h2>
+<h2>Building</h2>
 
-<p>An output configuration example :</p>
+<p>In order to build the new distribution, you must execute the following:</p>
 
-<p>```xml
- <outputs>
-    <output>
-        &lt;IncludesArtifactId>org.apache.felix.main</IncludesArtifactId>
-        <directory>bin</directory>
-        <outputFileName>felix.jar</outputFileName>
-    </output>
-    <output>
-        &lt;IncludesArtifactId>org.apache.felix.fileinstall</IncludesArtifactId>
-        <directory>bundles</directory>
-    </output>
-</outputs>
-```</p>
+<pre><code>mvn clean install
+</code></pre>
 
-<p>Results in the following :</p>
+<h2>Executing</h2>
 
-<ul>
-<li>The felix dependency will be redirected to the "bin" directory, and will be renamed to "felix.jar".</li>
-<li>The fileinstall dependency will be redirected to the "bundles" directory.</li>
-<li>All other dependencies go to the "load" folder (default behavior).</li>
-</ul>
-
-<p>Projects using this plugin need to use the "osgi-distribution" packaging type, and call the plugin in their plugins section.</p>
-
-<p>```xml
-<build>
-    <plugins>
-        <plugin>
-            <groupId>fr.liglab.adele.common</groupId>
-            <artifactId>maven-osgi-distribution-plugin</artifactId>
-            <version>1.0.2-SNAPSHOT</version>
-            <extensions>true</extensions>
-            <configuration>
-                <defaultOutputDirectory>bundle</defaultOutputDirectory>
-                <generateScripts>true</generateScripts>
-                <outputs>
-                    ...
-                </outputs>
-            </configuration>
-        </plugin>
-    </plugins>
-</build>
-```</p>
-
-<p>To run the plugin, just call the "install" goal on your project.</p>
-
-<p>Plugin configuration options
- * <code>defaultOutputDirectory</code> to specifiy the location of the artifacts declared in the dependency section. Except for artifacts defined in the <code>outputs</code> section. Default value <code>load</code>.
- * <code>generateScripts</code> to generate launcher temporal scripts (useful while testing distribution) Default value <code>false</code>.
- * <code>flattenDP</code> to specify if Deployment-Packages dependencies will be flatten in the distribution or not. Default value <code>false</code>.
- * <code>outputs</code> used to configure target location for some artifacts.
- * <code>output</code> the entry to define the desired artifact.
- * <code>IncludesArtifactId</code> the artifactId.
- * <code>directory</code> the target directory location of the current artifact.
- * <code>outputFileName</code> if defined, the artifact filename will be overrided by this value.</p>
+<p>In the <em>target</em> directory, there is a zip file containing the builded distribution. 
+Also, there are generated scripts <em>start.sh</em> and <em>start.bat</em> to execute the distribution using the temporary files</p>
 
                   </div>
             </div>
