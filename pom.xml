@@ -93,6 +93,13 @@
 
     <build>
         <plugins>
+           <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-release-plugin</artifactId>
+              <configuration>
+                 <pushChanges>false</pushChanges>
+              </configuration>
+           </plugin>
             <!-- Integration test using the invoker plugin -->
             <plugin>
                 <artifactId>maven-invoker-plugin</artifactId>
