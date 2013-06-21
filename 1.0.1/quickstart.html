@@ -51,7 +51,7 @@
                 
             
                   <li id="publishDate">Last Published: 2013-06-21</li>
-                  <li class="divider">|</li> <li id="projectVersion">Version: 1.0.2-SNAPSHOT</li>
+                  <li class="divider">|</li> <li id="projectVersion">Version: 1.0.1</li>
                       
                 
             
@@ -224,7 +224,7 @@
             &lt;plugin&gt;
                 &lt;groupId&gt;fr.liglab.adele.common&lt;/groupId&gt;
                 &lt;artifactId&gt;maven-osgi-distribution-plugin&lt;/artifactId&gt;
-                &lt;version&gt;1.0.2-SNAPSHOT&lt;/version&gt;
+                &lt;version&gt;1.0.1&lt;/version&gt;
                 &lt;extensions&gt;true&lt;/extensions&gt;
                 &lt;configuration&gt;
                     &lt;defaultOutputDirectory&gt;bundle&lt;/defaultOutputDirectory&gt;
@@ -278,13 +278,12 @@
 
 <p>Projects using this plugin need to use the "osgi-distribution" packaging type, and call the plugin in their plugins section.</p>
 
-<p>```xml
-<build>
+<p><build>
     <plugins>
         <plugin>
             <groupId>fr.liglab.adele.common</groupId>
             <artifactId>maven-osgi-distribution-plugin</artifactId>
-            <version>1.0.2-SNAPSHOT</version>
+            <version>1.0.1</version>
             <extensions>true</extensions>
             <configuration>
                 <defaultOutputDirectory>bundle</defaultOutputDirectory>
@@ -295,20 +294,22 @@
             </configuration>
         </plugin>
     </plugins>
-</build>
-```</p>
+</build></p>
 
 <p>To run the plugin, just call the "install" goal on your project.</p>
 
-<p>Plugin configuration options
- * <code>defaultOutputDirectory</code> to specifiy the location of the artifacts declared in the dependency section. Except for artifacts defined in the <code>outputs</code> section. Default value <code>load</code>.
- * <code>generateScripts</code> to generate launcher temporal scripts (useful while testing distribution) Default value <code>false</code>.
- * <code>flattenDP</code> to specify if Deployment-Packages dependencies will be flatten in the distribution or not. Default value <code>false</code>.
- * <code>outputs</code> used to configure target location for some artifacts.
- * <code>output</code> the entry to define the desired artifact.
- * <code>IncludesArtifactId</code> the artifactId.
- * <code>directory</code> the target directory location of the current artifact.
- * <code>outputFileName</code> if defined, the artifact filename will be overrided by this value.</p>
+<p>Plugin configuration options:</p>
+
+<ul>
+<li><code>defaultOutputDirectory</code> to specifiy the location of the artifacts declared in the dependency section. Except for artifacts defined in the <code>outputs</code> section. Default value <code>load</code>.</li>
+<li><code>generateScripts</code> to generate launcher temporal scripts (useful while testing distribution) Default value <code>false</code>.</li>
+<li><code>flattenDP</code> to specify if Deployment-Packages dependencies will be flatten in the distribution or not. Default value <code>false</code>.</li>
+<li><code>outputs</code> used to configure target location for some artifacts.</li>
+<li><code>output</code> the entry to define the desired artifact.</li>
+<li><code>IncludesArtifactId</code> the artifactId.</li>
+<li><code>directory</code> the target directory location of the current artifact.</li>
+<li><code>outputFileName</code> if defined, the artifact filename will be overrided by this value.</li>
+</ul>
 
                   </div>
             </div>
