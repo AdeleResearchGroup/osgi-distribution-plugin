@@ -21,7 +21,14 @@
         <title>Maven OSGi Distribution plugin</title>
         <lastStableSnapshotVersionQualifier>TODO</lastStableSnapshotVersionQualifier>
     </properties>
-
+    <profiles>
+    <profile>
+       <id>release</id>
+       <properties>
+          <site.path>${project.version}</site.path>
+       </properties>
+    </profile>
+ </profiles>
 	<dependencies>
 		<dependency>
 			<groupId>org.twdata.maven</groupId>

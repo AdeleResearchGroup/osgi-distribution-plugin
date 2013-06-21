@@ -52,15 +52,16 @@ A full run, executing all the above steps:
 Configuration Options
 ---------------------------------
 
-Plugin configuration options
- * `defaultOutputDirectory` to specify the location of the artifacts declared in the dependency section. Except for artifacts defined in the `outputs` section. Default value `load`.
- * `generateScripts` to generate launcher temporal scripts (useful while testing distribution) Default value `false`.
- * `flattenDP` to specify if Deployment-Packages dependencies will be flatten in the distribution or not. Default value `false`.
- * `outputs` used to configure target location for some artifacts.
- * `output` the entry to define the desired artifact.
- * `IncludesArtifactId` the artifactId.
- * `directory` the target directory location of the current artifact.
- * `outputFileName` if defined, the artifact filename will be overrided by this value.
+Plugin configuration options:
+
+* _defaultOutputDirectory_ to specify the location of the artifacts declared in the dependency section. Except for artifacts defined in the `outputs` section. Default value `load`.
+* _generateScripts_ to generate launcher temporal scripts (useful while testing distribution) Default value `false`.
+* _flattenDP_ to specify if Deployment-Packages dependencies will be flatten in the distribution or not. Default value `false`.
+* _outputs_ used to configure target location for some artifacts.
+* _output_ the entry to define the desired artifact.
+* _IncludesArtifactId_ the artifactId.
+* _directory_ the target directory location of the current artifact.
+* _outputFileName_ if defined, the artifact filename will be overrided by this value.
 
 Configuration Example
 ---------------------------------
