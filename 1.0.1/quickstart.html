@@ -243,17 +243,18 @@
 
 <p>An output configuration example :</p>
 
-<p>   <outputs>
-      <output>
-         &lt;IncludesArtifactId>org.apache.felix.main</IncludesArtifactId>
-         <directory>bin</directory>
-         <outputFileName>felix.jar</outputFileName>
-      </output>
-      <output>
-         &lt;IncludesArtifactId>org.apache.felix.fileinstall</IncludesArtifactId>
-         <directory>bundles</directory>
-      </output>
-   </outputs></p>
+<pre><code>&lt;outputs&gt;
+  &lt;output&gt;
+     &lt;IncludesArtifactId&gt;org.apache.felix.main&lt;/IncludesArtifactId&gt;
+     &lt;directory&gt;bin&lt;/directory&gt;
+     &lt;outputFileName&gt;felix.jar&lt;/outputFileName&gt;
+  &lt;/output&gt;
+  &lt;output&gt;
+     &lt;IncludesArtifactId&gt;org.apache.felix.fileinstall&lt;/IncludesArtifactId&gt;
+     &lt;directory&gt;bundles&lt;/directory&gt;
+  &lt;/output&gt;
+&lt;/outputs&gt;
+</code></pre>
 
 <p>Results in the following :</p>
 
@@ -265,23 +266,24 @@
 
 <p>Projects using this plugin need to use the "osgi-distribution" packaging type, and call the plugin in their plugins section.</p>
 
-<p>   <build>
-      <plugins>
-         <plugin>
-               <groupId>fr.liglab.adele.common</groupId>
-               <artifactId>maven-osgi-distribution-plugin</artifactId>
-               <version>1.0.1</version>
-               <extensions>true</extensions>
-               <configuration>
-                  <defaultOutputDirectory>bundle</defaultOutputDirectory>
-                  <generateScripts>true</generateScripts>
-                  <outputs>
-                     ...
-                  </outputs>
-               </configuration>
-         </plugin>
-      </plugins>
-   </build></p>
+<pre><code>&lt;build&gt;
+  &lt;plugins&gt;
+     &lt;plugin&gt;
+           &lt;groupId&gt;fr.liglab.adele.common&lt;/groupId&gt;
+           &lt;artifactId&gt;maven-osgi-distribution-plugin&lt;/artifactId&gt;
+           &lt;version&gt;1.0.1&lt;/version&gt;
+           &lt;extensions&gt;true&lt;/extensions&gt;
+           &lt;configuration&gt;
+              &lt;defaultOutputDirectory&gt;bundle&lt;/defaultOutputDirectory&gt;
+              &lt;generateScripts&gt;true&lt;/generateScripts&gt;
+              &lt;outputs&gt;
+                 ...
+              &lt;/outputs&gt;
+           &lt;/configuration&gt;
+     &lt;/plugin&gt;
+  &lt;/plugins&gt;
+&lt;/build&gt;
+</code></pre>
 
 <p>To run the plugin, just call the "install" goal on your project.</p>
 
