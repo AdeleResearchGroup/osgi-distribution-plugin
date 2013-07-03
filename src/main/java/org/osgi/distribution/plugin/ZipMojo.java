@@ -18,7 +18,6 @@ import org.codehaus.plexus.util.FileUtils;
  * Zip all pom resources content in a .zip file
  * 
  * @goal zip
- * @execute phase="prepare-package"
  * @phase package
  */
 public class ZipMojo
