@@ -4,6 +4,8 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.FilenameFilter;
 import java.io.IOException;
@@ -12,8 +14,11 @@ import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Properties;
 import java.util.Set;
-import java.util.regex.Pattern;
+import java.util.StringTokenizer;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.model.Dependency;
@@ -35,7 +40,7 @@ import org.twdata.maven.mojoexecutor.MojoExecutor;
  */
 public class PrepareMojo extends AbstractMojo {
 
-	private static Pattern regexSlashes = Pattern.compile("\\\\");
+	//private static Pattern regexSlashes = Pattern.compile("\\\\");
 
 	/**
 	 * @parameter expression="${project.artifactId}"
@@ -112,8 +117,9 @@ public class PrepareMojo extends AbstractMojo {
 
 		try {
 			manageDependencies();
-			if (flattenDP)
-				unzipDPs();
+			if (flattenDP) {
+				unzipDeploymentPackages();
+			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -127,58 +133,93 @@ public class PrepareMojo extends AbstractMojo {
 	}
 
 	/**
-	 * Eliminates the duplicated jars in distribution (not taking in account the lib directory)
+	 * Eliminates the duplicated jar and dp files in "Felix" distributions. Duplicates are only eliminated in fileinstall
+	 * directories, felix configuration is read to charge this information.
+	 * 
 	 */
 	private void eliminateDuplicateFiles() {
 
-		File[] dirsInDistrib = new File(defaultDistribDirectoryPath).listFiles(new FileFilter() {
-			public boolean accept(File file) {
-				return (file.isDirectory() && (!file.getName().equals("lib")));
-			}
-		});
+		Properties prop = new Properties();
+		List<File> directoryList = new ArrayList<File>();
+		try {
+			prop.load(new FileInputStream(defaultDistribDirectoryPath + File.separator + "conf" + File.separator
+			      + "config.properties"));
+			String deployDir = prop.getProperty("felix.auto.deploy.dir", "bundle");
 
-		
-		Set<String> checkSums = new HashSet<String>();
-		List<File> toDelete = new ArrayList<File>();
-		for (File dir : dirsInDistrib) {
-			File[] filesInDir = dir.listFiles(new FilenameFilter() {
-				public boolean accept(File dir, String name) {
-					return name.endsWith(".jar");
+
+			directoryList.add(new File(defaultDistribDirectoryPath, deployDir));
+
+			// Directories in file install
+			String dirsProperty = (String) prop.getProperty("felix.fileinstall.dir", "./load");
+
+			// Multiple directories in property "felix.fileinstall.dir"
+			if (dirsProperty != null && dirsProperty.indexOf(',') != -1) {
+				StringTokenizer st = new StringTokenizer(dirsProperty, ",");
+				while (st.hasMoreTokens()) {
+					final String dir = st.nextToken().trim();
+					if (dir.startsWith("./")) {
+						// Taking in account only local directories
+						directoryList.add(new File(defaultDistribDirectoryPath, dir.substring(2)));
+					}
 				}
-			});
-			getLog().info("Jar Files in " + dir.getName());
-			for (File file : filesInDir) {				
-				try {
-	            String md5 = getMD5Checksum(file);
-					getLog().info(file.getName() + " - MD5 - " + md5);
-					if (checkSums.contains(md5)) {
-						toDelete.add(file);
-					} else {
-						checkSums.add(md5);
-					}						
-            } catch (Exception e) {
-	            e.printStackTrace();
-            }
+			} else { // Only one directory in property "felix.fileinstall.dir"
+				if (dirsProperty.startsWith("./")) {
+					// Taking in account only local directories
+					directoryList.add(new File(defaultDistribDirectoryPath, dirsProperty.substring(2)));
+				}
 			}
-		}
-		
-		for (File file : toDelete) {
-			getLog().info("JAR to be deleted -> " + file.getAbsolutePath());
-			boolean deleted = file.delete();
-			if (deleted)
-				getLog().info("JAR has been deleted -> ");
-		}
 
+			Set<String> checkSums = new HashSet<String>();
+			List<File> toDelete = new ArrayList<File>();
+
+			for (File dir : directoryList) {
+				if (dir.exists()) {
+					File[] filesInDir = dir.listFiles(new FilenameFilter() {
+						public boolean accept(File dir, String name) {
+							return name.endsWith(".jar") || name.endsWith(".dp");
+						}
+					});
+					
+					// There are .jar and .dp files in the directory?
+					if (filesInDir!=null && filesInDir.length>0) {
+						for (File file : filesInDir) {
+							try {
+								String md5 = getMD5Checksum(file);
+								// The file is in a prevoius directory, it must be deleted
+								if (checkSums.contains(md5)) {
+									toDelete.add(file);
+								} else {
+									checkSums.add(md5);
+								}
+							} catch (Exception e) {
+								e.printStackTrace();
+							}
+						}
+					}
+				}
+			}
+
+			for (File file : toDelete) {
+				getLog().info("File to be deleted -> " + file.getAbsolutePath());
+				file.delete();
+			}
+
+		} catch (FileNotFoundException e) {
+			// e.printStackTrace();
+		} catch (IOException e) {
+			// e.printStackTrace();
+		}
 	}
 
 	/**
 	 * creates a byte checksum of a file
+	 * 
 	 * @param file
 	 * @return
 	 * @throws Exception
 	 */
 	private byte[] createChecksum(File file) throws Exception {
-		
+
 		InputStream fis = new FileInputStream(file);
 
 		byte[] buffer = new byte[1024];
@@ -198,6 +239,7 @@ public class PrepareMojo extends AbstractMojo {
 
 	/**
 	 * creates a string md5 checksum of a file
+	 * 
 	 * @param file
 	 * @return
 	 * @throws Exception
@@ -216,9 +258,7 @@ public class PrepareMojo extends AbstractMojo {
 	 * Give executable rights to bat and sh files in distrib directory.
 	 */
 	private void giveRights() {
-
 		File[] filesInDistrib = new File(defaultDistribDirectoryPath).listFiles(new FilenameFilter() {
-
 			public boolean accept(File dir, String name) {
 				return (name.endsWith(".bat") || !name.contains("."));
 			}
@@ -229,7 +269,6 @@ public class PrepareMojo extends AbstractMojo {
 	}
 
 	private void generateScripts() {
-
 		String winpath = this.project.getBasedir() + File.separator + "start.bat";
 		String unixpath = this.project.getBasedir() + File.separator + "start.sh";
 		generateScriptFile(generateWinScriptContent(), winpath);
@@ -295,46 +334,86 @@ public class PrepareMojo extends AbstractMojo {
 	private void manageDependencies() throws MojoExecutionException, IOException {
 		List<Dependency> dependencies = project.getDependencies();
 
-		if (dependencies != null) {
-			for (Object depObj : dependencies) {
-				if (!(depObj instanceof Dependency))
-					continue;
+		for (Dependency dependency : dependencies) {
+			if (dependency.getType().equals("play2")) {
+				unzipPlay2WithDependencyPlugin(dependency);
+			} else if (dependency.getType().equals("osgi-distribution")) {
+				unzipOsgiDistributionWithDependencyPlugin(dependency);
+			} else {
+				copyDependency(dependency);
+			}
+		}
 
-				Dependency dep = (Dependency) depObj;
+		/*
+		 * if (dependencies != null) { for (Object depObj : dependencies) { if (!(depObj instanceof Dependency)) continue;
+		 * 
+		 * Dependency dep = (Dependency) depObj;
+		 * 
+		 * if (dep.getType().equals("play2")) { unzipPlay2WithDependencyPlugin(dep); } else if
+		 * (dep.getType().equals("osgi-distribution")) { unzipOsgiDistributionWithDependencyPlugin(dep); } else {
+		 * copyDependency(dep); } } }
+		 */
+	}
 
-				if (dep.getType().equals("play2")) {
-					unzipPlay2WithDependencyPlugin(dep);
-				} else if (dep.getType().equals("osgi-distribution")) {
-					unzipOsgiDistributionWithDependencyPlugin(dep);
-				} else {
-					copyDependency(dep);
+	private void unzipDeploymentPackages() throws IOException {
+
+		File tempDistribDir = new File(defaultDistribDirectoryPath);
+
+		File[] firstLevelDirectories = tempDistribDir.listFiles(new FileFilter() {
+			public boolean accept(File dir) {
+				return dir.isDirectory();
+			}
+		});
+
+		for (File dir : firstLevelDirectories) {
+			File[] files = dir.listFiles();
+			getLog().info("First level directory " + dir.getName());
+			for (File dpFile : files) {
+				if (dpFile.getName().endsWith(".dp")) {
+					unZipFile(dpFile, dir);
+					dpFile.delete();
+				}
+			}
+						
+			// Copy all files in $distribution/$dir/bundles into $distribution/$dir
+			File tempBundlesDir = new File(dir, "bundles");
+			if (tempBundlesDir.exists()) {
+				// Copy the files to the upper level
+				FileUtils.copyDirectoryStructure(tempBundlesDir, dir);
+				// Delete the $distribution/$outputDirectory/bundles directory
+				FileUtils.deleteDirectory(tempBundlesDir);
+			}
+			
+			File tempMetaInfDir = new File(dir, "META-INF");
+			if (tempBundlesDir.exists()) {
+				// Delete the $distribution/$dir/META-INF
+				FileUtils.deleteDirectory(tempMetaInfDir);
+			}
+
+		}
+
+		/*
+		File tempDistribLoadDir = new File(tempDistribDir, defaultOutputDirectory);
+		if (tempDistribLoadDir.exists()) {
+			File[] files = tempDistribLoadDir.listFiles();
+			for (File dpFile : files) {
+				if (dpFile.getName().endsWith(".dp")) {
+					unZipFile(dpFile, tempDistribLoadDir);
+					dpFile.delete();
 				}
 			}
 		}
-	}
 
-	/**
-	 * Unzip an osgi distribution dependency into distribution folder. WARNING : introduce corrupted files sometimes
-	 * 
-	 * @param dep
-	 * @throws MojoExecutionException
-	 * @throws IOException
-	 * @deprecated
-	 */
-	private void unzipOsgiDistribution(Dependency dep) throws MojoExecutionException, IOException {
+		// Copy all files in $distribution/$outputDirectory/bundles into $distribution/$outputFolder
+		File tempDistribLoadBundleDir = new File(tempDistribLoadDir, "bundles");
+		FileUtils.copyDirectoryStructure(tempDistribLoadBundleDir, tempDistribLoadDir);
+		// Delete the $distribution/$outputDirectory/bundles directory
+		FileUtils.deleteDirectory(tempDistribLoadBundleDir);
 
-		String temporalDependencyPath = this.project.getBuild().getDirectory();
-
-		String zipFinalPathName = defaultDistribDirectoryPath + File.separator + dep.getArtifactId() + "-"
-		      + dep.getVersion() + ".zip";
-		Xpp3Dom config = MojoExecutor.configuration(MojoExecutor.element("from", zipFinalPathName),
-		      MojoExecutor.element("to", temporalDependencyPath));
-
-		MojoExecutor.executeMojo(MojoExecutor.plugin("org.codehaus.mojo", "truezip-maven-plugin", "1.1"),
-		      MojoExecutor.goal("cp"), config, MojoExecutor.executionEnvironment(project, session, pluginManager));
-		File temporal = new File(temporalDependencyPath + File.separator + dep.getArtifactId());
-		FileUtils.copyDirectoryStructure(temporal, new File(defaultDistribDirectoryPath));
-		// temporal.delete();
+		// Delete the $distribution/$outputDirectory/META-INF
+		FileUtils.deleteDirectory(new File(tempDistribLoadDir, "META-INF"));
+		
+		*/
 	}
 
 	private void unzipOsgiDistributionWithDependencyPlugin(Dependency dep) throws MojoExecutionException, IOException {
@@ -349,104 +428,6 @@ public class PrepareMojo extends AbstractMojo {
 		File temporal = new File(temporalDependencyPath + File.separator + dep.getArtifactId());
 		FileUtils.copyDirectoryStructure(temporal, new File(defaultDistribDirectoryPath));
 		// temporal.delete();
-	}
-
-	private String translatePath(String pathname) {
-
-		if (pathname == null) {
-			return null;
-		}
-
-		pathname = regexSlashes.matcher(pathname).replaceAll("/");
-		pathname = "/" + pathname;
-		return pathname;
-	}
-
-	private void unzipDPs() throws MojoExecutionException, IOException {
-		// unzip Deployment package
-
-		String tempDir = null;
-
-		// Translate the path from windows to UNIX format to avoid groovy concatenation problem due to escape character
-		if ("\\".equals(File.separator))
-			tempDir = translatePath(defaultDistribDirectoryPath);
-		else
-			tempDir = defaultDistribDirectoryPath;
-
-		Xpp3Dom gmavenConfig = MojoExecutor
-		      .configuration(MojoExecutor
-		            .element(
-		                  "source",
-		                  "                 import org.apache.commons.lang.StringUtils\n"
-		                        + "                 import java.util.zip.ZipInputStream\n"
-		                        + "        def getExtensionFromFilename(filename) {\n"
-		                        + "                        def returned_value = \"\"\n"
-		                        + "                        m = (filename =~ /(\\.[^\\.]*)$/)\n"
-		                        + "                        if (m.size() > 0) returned_value = ((m[0][0].size() > 0) ? m[0][0].substring(1).trim().toLowerCase() : \"\");\n"
-		                        + "                        return returned_value\n"
-		                        + "                    }\n"
-		                        + "                 File.metaClass.unzip = { String dest ->\n"
-		                        + "                        //in metaclass added methods, 'delegate' is the object on which\n"
-		                        + "                        //the method is called. Here it's the file to unzip\n"
-		                        + "                        def result = new ZipInputStream(new FileInputStream(delegate))\n"
-		                        + "                        def destFile = new File(dest)\n"
-		                        + "                        if(!destFile.exists()){\n"
-		                        + "                            destFile.mkdir();\n"
-		                        + "                        }\n"
-		                        + "                        result.withStream{\n"
-		                        + "                            def entry\n"
-		                        + "                            while(entry = result.nextEntry){\n"
-		                        + "                                if (!entry.isDirectory()){\n"
-		                        + "                                    new File(dest + File.separator + entry.name).parentFile?.mkdirs()\n"
-		                        + "                                    def output = new FileOutputStream(dest + File.separator\n"
-		                        + "                                            + entry.name)\n"
-		                        + "                                    output.withStream{\n"
-		                        + "                                        int len = 0;\n"
-		                        + "                                        byte[] buffer = new byte[4096]\n"
-		                        + "                                        while ((len = result.read(buffer)) > 0){\n"
-		                        + "                                            output.write(buffer, 0, len);\n"
-		                        + "                                        }\n"
-		                        + "                                    }\n"
-		                        + "                                }\n"
-		                        + "                                else {\n"
-		                        + "                                    new File(dest + File.separator + entry.name).mkdir()\n"
-		                        + "                                }\n" + "                            }\n"
-		                        + "                        }\n" + "                    }\n"
-		                        + "                    File tempDistribDir = new File(\""
-		                        + tempDir
-		                        + "\")\n"
-		                        + "                    File tempDistribLoadDir = new File(tempDistribDir, \"load\")\n"
-		                        + "                        if (tempDistribLoadDir.exists()) {\n"
-		                        + "                            tempDistribLoadDir.eachFile { file ->\n"
-		                        + "\n"
-		                        + "                                def fileName = file.name\n"
-		                        + "                                def fileExtension = getExtensionFromFilename(fileName)\n"
-		                        + "\n"
-		                        + "                                // replace all PRODUCT match items to real product name\n"
-		                        + "                                if (fileExtension.equalsIgnoreCase(\"dp\")) {\n"
-		                        + "\n"
-		                        + "                                    file.unzip(\"$tempDistribLoadDir\")\n"
-		                        + "                                    file.delete()\n"
-		                        + "                                }\n"
-		                        + "                            }\n"
-		                        + "                        }\n"
-		                        + "\n"
-		                        + "                        File tempDistribLoadBundleDir = new File(tempDistribLoadDir, \"bundles\")\n"
-		                        + "                        if (tempDistribLoadBundleDir.exists()) {\n"
-		                        + "                            tempDistribLoadBundleDir.eachFile { file ->\n"
-		                        + "                                file.renameTo(new File(tempDistribLoadDir, file.getName()));\n"
-		                        + "                            }\n"
-		                        + "                            tempDistribLoadBundleDir.deleteDir()\n"
-		                        + "                        }\n"
-		                        + "\n"
-		                        + "                        File tempDistribLoadManifestDir = new File(tempDistribLoadDir, \"META-INF\")\n"
-		                        + "                        if (tempDistribLoadManifestDir.exists()) {\n"
-		                        + "                            tempDistribLoadManifestDir.deleteDir()\n"
-		                        + "                        }"));
-		MojoExecutor.executeMojo(MojoExecutor.plugin("org.codehaus.groovy.maven", "gmaven-plugin", "1.0"),
-		      MojoExecutor.goal("execute"), gmavenConfig,
-		      MojoExecutor.executionEnvironment(project, session, pluginManager));
-
 	}
 
 	private void unzipPlay2WithDependencyPlugin(Dependency dep) throws MojoExecutionException, IOException {
@@ -482,6 +463,7 @@ public class PrepareMojo extends AbstractMojo {
 
 		// temporal.delete();
 	}
+
 
 	/**
 	 * Copy the dependency given as parameter into default folder, or given output folder.
@@ -541,6 +523,50 @@ public class PrepareMojo extends AbstractMojo {
 
 		MojoExecutor.executeMojo(MojoExecutor.plugin("org.apache.maven.plugins", "maven-dependency-plugin", "2.5.1"),
 		      MojoExecutor.goal("copy"), config, MojoExecutor.executionEnvironment(project, session, pluginManager));
+	}
+
+	private void unZipFile(File zipFile, File outputFolder) {
+
+		byte[] buffer = new byte[1024];
+
+		try {
+
+			// create output directory is not exists
+			if (!outputFolder.exists()) {
+				outputFolder.mkdir();
+			}
+
+			// get the zip file content
+			ZipInputStream zis = new ZipInputStream(new FileInputStream(zipFile));
+			// get the zipped file list entry
+			ZipEntry ze = zis.getNextEntry();
+
+			while (ze != null) {
+
+				String fileName = ze.getName();
+				File newFile = new File(outputFolder.getAbsolutePath() + File.separator + fileName);
+
+				// create all non exists folders
+				// else you will hit FileNotFoundException for compressed folder
+				new File(newFile.getParent()).mkdirs();
+
+				FileOutputStream fos = new FileOutputStream(newFile);
+
+				int len;
+				while ((len = zis.read(buffer)) > 0) {
+					fos.write(buffer, 0, len);
+				}
+
+				fos.close();
+				ze = zis.getNextEntry();
+			}
+
+			zis.closeEntry();
+			zis.close();
+
+		} catch (IOException ex) {
+			ex.printStackTrace();
+		}
 	}
 
 }
