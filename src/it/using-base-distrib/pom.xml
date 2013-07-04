@@ -1,0 +1,53 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+   <modelVersion>4.0.0</modelVersion>
+   <groupId>org.osgi.distribution.plugin.tests</groupId>
+   <artifactId>using-base-distrib</artifactId>
+   <version>1.0-SNAPSHOT</version>
+   <packaging>osgi-distribution</packaging>
+
+   <!-- Project repositories -->
+   <repositories>
+      <!-- ADELE repositories -->
+      <repository>
+         <snapshots>
+            <enabled>false</enabled>
+         </snapshots>
+         <id>adele-central-snapshot</id>
+         <name>adele-repos</name>
+         <url>http://maven.dynamis-technologies.com/artifactory/adele-repos</url>
+      </repository>
+      <repository>
+         <snapshots />
+         <id>snapshots</id>
+         <name>adele-central-release</name>
+         <url>http://maven.dynamis-technologies.com/artifactory/adele-repos</url>
+      </repository>
+   </repositories>
+
+   <dependencies>
+      <dependency>
+         <groupId>fr.liglab.adele.common</groupId>
+         <artifactId>distribution.base</artifactId>
+         <version>1.1.0</version>
+         <type>osgi-distribution</type>
+      </dependency>
+      <dependency>
+         <groupId>org.apache.felix</groupId>
+         <artifactId>org.apache.felix.fileinstall</artifactId>
+         <version>3.1.4</version>
+      </dependency> 
+   </dependencies>
+
+   <build>
+      <plugins>
+         <plugin>
+            <groupId>fr.liglab.adele.common</groupId>
+            <artifactId>maven-osgi-distribution-plugin</artifactId>
+            <version>@project.version@</version>
+            <extensions>true</extensions>
+         </plugin>
+      </plugins>
+   </build>
+
+</project>

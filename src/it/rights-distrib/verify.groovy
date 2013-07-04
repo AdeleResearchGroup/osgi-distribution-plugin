@@ -13,10 +13,6 @@ assert dist.exists();
 assert dist.canRead();
 
 
-def File toto = new File(dist, "toto.txt"); 
-assert toto != null;
-assert toto.canExecute();
-
 def File titi = new File(dist, "titi.bat");
 assert  titi != null;
 assert titi.canExecute();
