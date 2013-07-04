@@ -13,7 +13,7 @@ assert dist.canRead();
 
 def zipFile = new ZipFile(dist);
 
-assert zipFile.getEntry("toto.txt") != null;
-assert zipFile.getEntry("titi.dscilia") != null;
-assert zipFile.getEntry("conf").isDirectory();
+assert zipFile.getEntry("resources-distrib/toto.txt") != null;
+assert zipFile.getEntry("resources-distrib/conf/titi.dscilia") != null;
+assert zipFile.getEntry("resources-distrib/conf/").isDirectory();
 

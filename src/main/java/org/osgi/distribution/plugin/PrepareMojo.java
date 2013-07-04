@@ -125,10 +125,10 @@ public class PrepareMojo extends AbstractMojo {
 		}
 		manageResources();
 		eliminateDuplicateFiles();
-		giveRights();
 		if (generateScripts) {
 			generateScripts();
 		}
+		giveRights();
 
 	}
 
@@ -260,7 +260,7 @@ public class PrepareMojo extends AbstractMojo {
 	private void giveRights() {
 		File[] filesInDistrib = new File(defaultDistribDirectoryPath).listFiles(new FilenameFilter() {
 			public boolean accept(File dir, String name) {
-				return (name.endsWith(".bat") || !name.contains("."));
+				return (name.endsWith(".bat") || name.endsWith(".sh") || !name.contains("."));
 			}
 		});
 		for (File file : filesInDistrib) {

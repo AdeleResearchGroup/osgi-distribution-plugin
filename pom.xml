@@ -116,6 +116,7 @@
                     <streamLogs>true</streamLogs>
                     <cloneProjectsTo>${project.build.directory}/it</cloneProjectsTo>
                     <localRepositoryPath>${project.build.directory}/local-repository</localRepositoryPath>
+                    <postBuildHookScript>verify</postBuildHookScript>
                     <goals>
                         <goal>clean</goal>
                         <goal>package</goal>

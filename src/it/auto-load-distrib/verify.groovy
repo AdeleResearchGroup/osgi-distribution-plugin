@@ -15,15 +15,30 @@ MessageDigest md = MessageDigest.getInstance("SHA1");
 
 // get inputStream of felix jar
 def zipFile = new ZipFile(dist);
-try {
-    def felixIs = zipFile.getInputStream(zipFile.getEntry("felix.jar"));
-    felixIs = new DigestInputStream(felixIs, md);
-} finally {
-    felixIs.close();
+
+zipFile.entries().each {
+   println it
 }
-def digest = new String(md.digest());
+
+// Calculate the digest from the felix zipped file
+def felixIs = zipFile.getInputStream(zipFile.getEntry("auto-load-distrib/load/org.apache.felix.main-4.0.3.jar"));	
+felixIs.eachByte(1024) { byte[] buf, int bytesRead ->
+	md.update(buf, 0, bytesRead);
+}
+felixIs.close();	
+
+def byteData =  md.digest()
+
+// Translate byteData checksum from byte[] to String
+def sb = new StringBuffer()
+byteData.each {
+	sb.append(Integer.toString((it & 0xff) + 0x100, 16).substring(1))
+}
+def digest = sb.toString()
+
 assert digest.equals(felixOriginalHash);
 
-assert zipFile.getEntry("load") != null;
-assert zipFile.getEntry("load").isDirectory();
-assert zipFile.getEntry("felix.jar") != null;
+assert zipFile.getEntry("auto-load-distrib/load/") != null;
+assert zipFile.getEntry("auto-load-distrib/load/").isDirectory();
+assert zipFile.getEntry("auto-load-distrib/load/org.apache.felix.main-4.0.3.jar") != null;
+
