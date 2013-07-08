@@ -16,6 +16,7 @@ embedded in the zip file.
 different names.
 * *Multiple inheritance*: a distribution can inherit from several other ones (removal of inherited file is not yet
 supported).
+* *Duplicated deployment units (bundle or deployment package) elimination*: when a distribution inherits from other one, deployment units can appear twice or more times in final distribution. The plugin eliminates duplicated deployment units, they are searched only in file install directories configuration.
 
 Goals Overview
 ---------------
