@@ -40,8 +40,6 @@ import org.twdata.maven.mojoexecutor.MojoExecutor;
  */
 public class PrepareMojo extends AbstractMojo {
 
-	//private static Pattern regexSlashes = Pattern.compile("\\\\");
-
 	/**
 	 * @parameter expression="${project.artifactId}"
 	 */
@@ -200,7 +198,6 @@ public class PrepareMojo extends AbstractMojo {
 			}
 
 			for (File file : toDelete) {
-				getLog().info("File to be deleted -> " + file.getAbsolutePath());
 				file.delete();
 			}
 
@@ -343,16 +340,6 @@ public class PrepareMojo extends AbstractMojo {
 				copyDependency(dependency);
 			}
 		}
-
-		/*
-		 * if (dependencies != null) { for (Object depObj : dependencies) { if (!(depObj instanceof Dependency)) continue;
-		 * 
-		 * Dependency dep = (Dependency) depObj;
-		 * 
-		 * if (dep.getType().equals("play2")) { unzipPlay2WithDependencyPlugin(dep); } else if
-		 * (dep.getType().equals("osgi-distribution")) { unzipOsgiDistributionWithDependencyPlugin(dep); } else {
-		 * copyDependency(dep); } } }
-		 */
 	}
 
 	private void unzipDeploymentPackages() throws IOException {
@@ -391,29 +378,6 @@ public class PrepareMojo extends AbstractMojo {
 			}
 
 		}
-
-		/*
-		File tempDistribLoadDir = new File(tempDistribDir, defaultOutputDirectory);
-		if (tempDistribLoadDir.exists()) {
-			File[] files = tempDistribLoadDir.listFiles();
-			for (File dpFile : files) {
-				if (dpFile.getName().endsWith(".dp")) {
-					unZipFile(dpFile, tempDistribLoadDir);
-					dpFile.delete();
-				}
-			}
-		}
-
-		// Copy all files in $distribution/$outputDirectory/bundles into $distribution/$outputFolder
-		File tempDistribLoadBundleDir = new File(tempDistribLoadDir, "bundles");
-		FileUtils.copyDirectoryStructure(tempDistribLoadBundleDir, tempDistribLoadDir);
-		// Delete the $distribution/$outputDirectory/bundles directory
-		FileUtils.deleteDirectory(tempDistribLoadBundleDir);
-
-		// Delete the $distribution/$outputDirectory/META-INF
-		FileUtils.deleteDirectory(new File(tempDistribLoadDir, "META-INF"));
-		
-		*/
 	}
 
 	private void unzipOsgiDistributionWithDependencyPlugin(Dependency dep) throws MojoExecutionException, IOException {
