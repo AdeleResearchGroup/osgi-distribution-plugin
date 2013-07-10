@@ -105,7 +105,6 @@
               <artifactId>maven-release-plugin</artifactId>
               <configuration>
                  <goals>deploy site-deploy</goals>
-                 <pushChanges>false</pushChanges>
               </configuration>
            </plugin>
             <!-- Integration test using the invoker plugin -->
