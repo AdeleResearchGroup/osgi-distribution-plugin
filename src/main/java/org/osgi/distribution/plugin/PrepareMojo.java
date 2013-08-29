@@ -396,7 +396,8 @@ public class PrepareMojo extends AbstractMojo {
 
 	private void unzipPlay2WithDependencyPlugin(Dependency dep) throws MojoExecutionException, IOException {
 		String temporalDependencyPath = this.project.getBuild().getDirectory() + File.separator + "dependencies";
-
+        //Get directory destination
+        String destinationDirectory = getDirectoryDestinationForDependency(dep);
 		// prepare dependency plugin config
 		Xpp3Dom items = null;
 		items = new Xpp3Dom("artifactItems");
@@ -422,7 +423,7 @@ public class PrepareMojo extends AbstractMojo {
 		File temporal = new File(temporalDependencyPath + File.separator + dep.getArtifactId());
 		for (File temporalFile : temporal.listFiles()) {
 			if (temporalFile.isDirectory() && temporalFile.getName().endsWith(dep.getVersion()))
-				FileUtils.copyDirectoryStructure(temporalFile, new File(defaultDistribDirectoryPath));
+				FileUtils.copyDirectoryStructure(temporalFile, new File(destinationDirectory));
 		}
 
 		// temporal.delete();
@@ -488,6 +489,25 @@ public class PrepareMojo extends AbstractMojo {
 		MojoExecutor.executeMojo(MojoExecutor.plugin("org.apache.maven.plugins", "maven-dependency-plugin", "2.5.1"),
 		      MojoExecutor.goal("copy"), config, MojoExecutor.executionEnvironment(project, session, pluginManager));
 	}
+
+    private String getDirectoryDestinationForDependency(Dependency dep){
+        String directory = defaultDistribDirectoryPath;
+        if (outputs != null) {
+            // check if there is an output entry for that dependency
+            for (Output output : outputs) {
+                if (dep.getArtifactId().equals(output.getIncludesArtifactId())) {
+                    // found a matching
+                    if (output.getDirectory() != null) {
+                        directory = defaultDistribDirectoryPath + File.separator + output.getDirectory();
+                    }
+                    // since we cant have 2 outputs for the same dep, break
+                    // out of the loop
+                    break;
+                }
+            }
+        }
+        return directory;
+    }
 
 	private void unZipFile(File zipFile, File outputFolder) {
 
