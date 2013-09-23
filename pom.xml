@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
    <groupId>fr.liglab.adele.common</groupId>
 	<artifactId>maven-osgi-distribution-plugin</artifactId>
-   <version>1.0.3-SNAPSHOT</version>
+   <version>1.1.0</version>
 	<packaging>maven-plugin</packaging>
     <name>${productName} :: ${projectName}</name>
 
@@ -290,6 +290,6 @@
         <url>http://github.com/AdeleResearchGroup/osgi-distribution-plugin/tree/master</url>
         <developerConnection>scm:git:ssh://git@github.com/AdeleResearchGroup/osgi-distribution-plugin.git
         </developerConnection>
-        <tag>HEAD</tag>
+        <tag>maven-osgi-distribution-plugin-1.1.0</tag>
     </scm>
 </project>
