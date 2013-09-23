@@ -13,7 +13,7 @@
         <productName>OSGi Distribution Plugin</productName>
         <projectName>Distribution Plugin</projectName>
         <webdavPluginVersion>2.2</webdavPluginVersion>
-
+        <github.global.server>github</github.global.server>
         <site.path>snapshot</site.path>
         <!-- TODO add property to get current snapshot version qualifier -->
 
